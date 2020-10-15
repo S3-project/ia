@@ -6,11 +6,12 @@ int	main(){
 	char *po = "../Ressources/images/shut.bmp";
 	BMPIMAGE *image = LoadBitmap(po);
 
-	printBitmap(*image);
+	printBitmap_RGB(image);
 	
-	BMPIMAGE_G *image_g = GetBitmap_G(*image);
+	CalculBitmapGray(image);
 
-	printBitmap_G(*image_g);
+	printBitmap_G(image);
+
 	freeBitmap(image);
 	return 0;
 }

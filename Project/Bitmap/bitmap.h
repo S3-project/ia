@@ -19,7 +19,7 @@ struct BMP_HEADER_STCT
 	uint32_t bfSize; /* The size of the file (header include) in bytes */
 	uint16_t unused1; 
 	uint16_t unused2;
-	uint32_t imageDataOffset; /* Offset to the start of image data */
+	uint32_t imageDataOffset; /* Offset to the start of image data_rgb */
 	uint32_t headerSize; /* The size of the second part of the header in bytes*/
 	int32_t width; /* The width of the image in pixels*/
 	int32_t heigth; /* The heigth of the image in pixels */
@@ -32,15 +32,9 @@ typedef struct  BMP_HEADER_STCT BMPHEADER;
 typedef struct
 {
 	BMPHEADER header; /* The information of the bitmap image*/
-	RGB **data; /* Matrix that contains the RGBs value of each pixels*/
+	RGB **data_rgb; /* Matrix that contains the RGBs value of each pixels*/
+	uint8_t **data_g;
 } BMPIMAGE;
-
-typedef struct
-{
-	int32_t width;
-	int32_t heigth;
-	uint8_t **data; /* Matrix that contains the RGBs value of each pixels*/
-} BMPIMAGE_G;
 
 
 /* Fonctions Bitmap */
@@ -48,8 +42,11 @@ typedef struct
 BMPIMAGE	*LoadBitmap(char *filename);
 void	freeBitmap(BMPIMAGE *image);
 bool	check_bmp_header(BMPHEADER* bmp_header);
-void	printBitmap(BMPIMAGE image);
-BMPIMAGE_G	*GetBitmap_G(BMPIMAGE image);
-void	printBitmap_G(BMPIMAGE_G image);
+
+bool	isGrayBitmapCalculed(BMPIMAGE *image);
+void	CalculBitmapGray(BMPIMAGE *image);
+
+void	printBitmap_RGB(BMPIMAGE *image);
+void	printBitmap_G(BMPIMAGE *image);
 
 #endif

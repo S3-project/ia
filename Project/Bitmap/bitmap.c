@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 
 BMPIMAGE	*LoadBitmap(char *filename)
@@ -27,15 +28,15 @@ BMPIMAGE	*LoadBitmap(char *filename)
 	}
 
 
-	image->data = malloc(sizeof(RGB*) * image->header.heigth);
-	if (image->data == NULL){
+	image->data_rgb = malloc(sizeof(RGB*) * image->header.heigth);
+	if (image->data_rgb == NULL){
 		perror("Allocation error.\n");
 		exit(EXIT_FAILURE);	
 	}
 	for (int i = 0; i < image->header.heigth; i++)
 	{
-		image->data[i] = malloc(sizeof(RGB) * image->header.width);
-		if (image->data[i] == NULL){
+		image->data_rgb[i] = malloc(sizeof(RGB) * image->header.width);
+		if (image->data_rgb[i] == NULL){
 			perror("Allocation error.\n");
 			exit(EXIT_FAILURE);	
 		}
@@ -52,11 +53,11 @@ BMPIMAGE	*LoadBitmap(char *filename)
 		fread(&hex, 1, 1, fp);
 
 		if (color == 0)
-			image->data[line][colone].B = hex; 
+			image->data_rgb[line][colone].B = hex; 
 		else if (color == 1)
-			image->data[line][colone].G = hex; 
+			image->data_rgb[line][colone].G = hex; 
 		else 
-			image->data[line][colone].R = hex; 
+			image->data_rgb[line][colone].R = hex; 
 		color = (color + 1) % 3;
 		if (color == 0){
 			colone = (colone + 1) % image->header.width;
@@ -71,9 +72,12 @@ BMPIMAGE	*LoadBitmap(char *filename)
 
 void	freeBitmap(BMPIMAGE *image){
 	for (int i = 0; i < image->header.heigth; i++){
-		free(image->data[i]);
+		free(image->data_rgb[i]);
+		if (image->data_g != NULL)
+			free(image->data_g[i]);
 	}
-	free(image->data);
+	free(image->data_rgb);
+	free(image->data_g);
 	free(image);
 }
 
@@ -81,7 +85,7 @@ bool	check_bmp_header(BMPHEADER* bmp_header){
 	/*
 		a Header is valid if:
 	       		- type is "BM"
-			- Headersize is equal of the offset of dataimage	
+			- Headersize is equal of the offset of data_rgbimage	
 	*/
 	return	bmp_header->type == 0x4D42
 		&& bmp_header->bits_per_pixel == 24
@@ -89,63 +93,70 @@ bool	check_bmp_header(BMPHEADER* bmp_header){
 		&& bmp_header->width > 0;
 }
 
-void	printBitmap(BMPIMAGE image)
-{
-	printf("Bitmap size: %dx%d.\n", image.header.width, image.header.heigth);
-	for(int y = 0; y < image.header.heigth; y++)
-	{
-		for(int x = 0; x < image.header.width; x++){
-			printf("[");
-			printf("%02x ", image.data[y][x].R);
-			printf("%02x ", image.data[y][x].G);
-			printf("%02x", image.data[y][x].B);
-			printf("]");
-		}
-		printf("\n");
-	}
-}
 
-BMPIMAGE_G	*GetBitmap_G(BMPIMAGE image)
+void	CalculBitmapGray(BMPIMAGE *image)
 {
-	BMPIMAGE_G *image_g = malloc(sizeof(*image_g));
-	if (image_g == NULL){
+	image->data_g = malloc(sizeof(uint8_t*) * image->header.heigth);
+	if (image->data_g == NULL){
 		perror("Allocation error.\n");
 		exit(EXIT_FAILURE);	
 	}
-	image_g->width = image.header.width;
-	image_g->heigth = image.header.heigth;
-	image_g->data = malloc(sizeof(uint8_t) * image_g->heigth);
-	if (image_g->data == NULL){
-		perror("Allocation error.\n");
-		exit(EXIT_FAILURE);	
-	}
-	for (int y = 0; y < image_g->heigth; y++)
+	for (int y = 0; y < image->header.heigth; y++)
 	{
-		image_g->data[y] = malloc(sizeof(uint8_t) * image_g->width);
-		if (image_g->data[y] == NULL){
+		image->data_g[y] = malloc(sizeof(uint8_t) * image->header.width);
+		if (image->data_g[y] == NULL){
 			perror("Allocation error.\n");
 			exit(EXIT_FAILURE);	
 		}
-		for (int x = 0; x < image_g->width; x++)
+		for (int x = 0; x < image->header.width; x++)
 		{
-			image_g->data[y][x] = (uint8_t)(image.data[y][x].R * 0.299 +
-					image.data[y][x].G * 0.857 + image.data[y][x].B * 0.114);
+			image->data_g[y][x] = (uint8_t)(image->data_rgb[y][x].R * 0.299 +
+					image->data_rgb[y][x].G * 0.857 + image->data_rgb[y][x].B * 0.114);
 		}
 	}
-	return image_g;
 }
 
-void	printBitmap_G(BMPIMAGE_G image){
-	printf("Bitmap gray size: %dx%d.\n", image.width, image.heigth);
-	for(int y = 0; y < image.heigth; y++)
+
+void	printBitmap_RGB(BMPIMAGE *image)
+{
+	if (image == NULL){
+		printf("The image pointor is NULL\n");
+		return;
+	}
+	printf("Bitmap size: %dx%d.\n", image->header.width, image->header.heigth);
+	for(int y = 0; y < image->header.heigth; y++)
 	{
-		for(int x = 0; x < image.width; x++){
+		for(int x = 0; x < image->header.width; x++){
 			printf("[");
-			printf("%02x", image.data[y][x]);
+			printf("%02x ", image->data_rgb[y][x].R);
+			printf("%02x ", image->data_rgb[y][x].G);
+			printf("%02x", image->data_rgb[y][x].B);
 			printf("]");
 		}
 		printf("\n");
 	}
 }
 
-
+void	printBitmap_G(BMPIMAGE *image){
+	if (image == NULL){
+		printf("The image pointor is NULL\n");
+		return;
+	}
+	if (!isGrayBitmapCalculed(image)){
+		printf("The gray scale of the bitmap hasn't be calculed. Use CalculBitmapGray().\n");
+		return;
+	}
+	printf("Bitmap gray size: %dx%d.\n", image->header.width, image->header.heigth);
+	for(int y = 0; y < image->header.heigth; y++)
+	{
+		for(int x = 0; x < image->header.width; x++){
+			printf("[");
+			printf("%02x", image->data_g[y][x]);
+			printf("]");
+		}
+		printf("\n");
+	}
+}
+bool	isGrayBitmapCalculed(BMPIMAGE *image){
+	return image->data_g != NULL;
+}
