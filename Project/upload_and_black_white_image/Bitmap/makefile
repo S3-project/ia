@@ -1,18 +1,32 @@
 CC=gcc
-ARGS=-Wall -Wextra _std=c99
-
+ARGS=-Wall -Wextra -std=c99
 SRC=$(wildcard *.c)
+SRC2=$(wildcard *.o)
 SUBDIR=$(wildcard */)
-DIR=$(shell echo ${PWD##*/}
+DIRNAME=$(lastword $(subst /, ,${CURDIR}))
+MAINFUNCT=no
 
+all:
+	for i in $(SUBDIR); do ($(MAKE) -C $$i); done
 
-all: 
-	for i in $(SUBDIR); do (cd $$i; $(MAKE) all); done
-	@if [$(SRC) != ""]; then\
-	       	$(MAKE) main;\
-	fi
+ifeq ($(strip $(MAINFUNCT)),yes)
+	$(MAKE) master
+else
+	$(MAKE) main
+endif	
+#	$(MAKE) clean
+
+master:
+ifneq ($(strip $(SRC)),)
+	$(CC) $(ARGS) -o main $(SRC) $(SRC2)
+endif
+
 main:
-	$(CC) $(ARGS) -c -o ../$(DIR).o $(SRC)
+ifneq ($(strip $(SRC)),)
+	$(CC) $(ARGS) -c -o ../$(DIRNAME).o $(SRC) $(SRC2)
+endif
 
 clean:
+ifneq ($(strip $(SRC2)),)
 	rm *.o
+endif
