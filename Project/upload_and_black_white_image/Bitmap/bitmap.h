@@ -7,11 +7,12 @@
      Bitmap Structures
 *************************/
 
-typedef struct{
+struct RGB_STCT{
 	uint8_t R; /* Red componnent */
 	uint8_t G; /* Green componnent */
 	uint8_t B; /* Blue componnent */
-} RGB;
+}  __attribute__((packed));
+typedef struct  RGB_STCT RGB;
 
 struct BMP_HEADER_STCT
 {
@@ -26,6 +27,11 @@ struct BMP_HEADER_STCT
 	uint16_t num_planes;
 	uint16_t bits_per_pixel; /* The size of an unique pixel. need to be 24 bits*/
 	uint32_t compression;
+	uint32_t unused3;
+	uint32_t unused4;
+	uint32_t unused5;
+	uint32_t unused6;
+	uint32_t unused7;
 } __attribute__((packed));
 typedef struct  BMP_HEADER_STCT BMPHEADER;
 
@@ -40,13 +46,15 @@ typedef struct
 /* Fonctions Bitmap */
 
 BMPIMAGE	*LoadBitmap(char *filename);
-void	freeBitmap(BMPIMAGE *image);
-bool	check_bmp_header(BMPHEADER* bmp_header);
+void	FreeBitmap(BMPIMAGE *image);
+bool	Check_bmp_header(BMPHEADER* bmp_header);
 
-bool	isGrayBitmapCalculed(BMPIMAGE *image);
+bool	IsGrayBitmapCalculed(BMPIMAGE *image);
 void	CalculBitmapGray(BMPIMAGE *image);
 
-void	printBitmap_RGB(BMPIMAGE *image);
-void	printBitmap_G(BMPIMAGE *image);
+void	PrintBitmap_RGB(BMPIMAGE *image);
+void	PrintBitmap_G(BMPIMAGE *image);
 
+void	SaveBitmap_G(BMPIMAGE *image, char *filename);
+void	SaveBitmap_RGB(BMPIMAGE *image, char *filename);
 #endif

@@ -3,15 +3,18 @@
 
 
 int	main(){
-	char *po = "../Ressources/images/shut.bmp";
+	char *po = "../../Ressources/images/test2.bmp";
+	char *out = "../../Ressources/images/test2_g.bmp";
 	BMPIMAGE *image = LoadBitmap(po);
 
-	printBitmap_RGB(image);
+	PrintBitmap_RGB(image);
 	
 	CalculBitmapGray(image);
 
-	printBitmap_G(image);
+	PrintBitmap_G(image);
 
-	freeBitmap(image);
+	SaveBitmap_G(image, out);
+
+	FreeBitmap(image);
 	return 0;
 }

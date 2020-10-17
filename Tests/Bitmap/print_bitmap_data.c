@@ -53,7 +53,7 @@ bool	check_bmp_header(BMPHEADER* bmp_header); /* Check the header of a bitmap he
 		CONSTANTS
 	*************************/
 
-const char *filename = "toto.bmp";
+const char *filename = "../../Ressources/images/test.bmp";
 
 
 	/*************************
@@ -79,11 +79,11 @@ int	main(){
 
 	rewind(fp);
 	fread(&image->header, sizeof(image->header), 1, fp);
-	if (!check_bmp_header(&image->header))
+	/*if (!check_bmp_header(&image->header))
 	{
 		perror("Invalid BMP format.\n");
 		exit(EXIT_FAILURE);	
-	}
+	}*/
 
 
 
