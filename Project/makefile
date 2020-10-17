@@ -4,10 +4,10 @@ SRC=$(wildcard *.c)
 SRC2=$(wildcard *.o)
 SUBDIR=$(wildcard */)
 DIRNAME=$(lastword $(subst /, ,${CURDIR}))
-MAINFUNCT=no
+MAINFUNCT=yes
 
 all:
-	$(shell sed -i 's/MAINFUNCT=no/MAINFUNCT=no/' */makefile)
+	$(shell sed -i 's/MAINFUNCT=yes/MAINFUNCT=no/' */makefile)
 	for i in $(SUBDIR); do (cd $$i; $(MAKE) all); done
 
 ifeq ($(strip $(MAINFUNCT)),yes)
