@@ -1,33 +1,21 @@
 CC=gcc
 ARGS=-Wall -Wextra -std=c99
-SRC=$(wildcard *.c)
-SRC2=$(wildcard *.o)
-SUBDIR=$(wildcard */)
+
+SRC=$(shell find . -name '*.c')
+OBJ=$(shell find . -name '*.o')
+DIRS=$(shell find * -type d)
+
 DIRNAME=$(lastword $(subst /, ,${CURDIR}))
-MAINFUNCT=no
 
 all:
-	$(shell sed -i 's/MAINFUNCT=no/MAINFUNCT=no/' */makefile)
-	for i in $(SUBDIR); do (cd $$i; $(MAKE) all); done
-
-ifeq ($(strip $(MAINFUNCT)),yes)
-	$(MAKE) master
-else
+	for i in $(DIRS); do(cp makefile $$i);done
 	$(MAKE) main
-endif	
 	$(MAKE) clean
 
-master:
-ifneq ($(strip $(SRC)),)
-	$(CC) $(ARGS) -o main.exe $(SRC) $(SRC2)
-endif
-
 main:
-ifneq ($(strip $(SRC)),)
-	$(CC) $(ARGS) -c -o ../$(DIRNAME).o $(SRC) $(SRC2)
-endif
+	$(CC) $(ARGS) -o ./$(DIRNAME).exe $(SRC) 
 
 clean:
-ifneq ($(strip $(SRC2)),)
-	rm *.o
-endif
+	for i in $(OBJ);do(rm $$i);done
+
+.SILENT:all main clean
