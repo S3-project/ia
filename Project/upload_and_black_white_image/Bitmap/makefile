@@ -7,18 +7,19 @@ DIRNAME=$(lastword $(subst /, ,${CURDIR}))
 MAINFUNCT=no
 
 all:
-	for i in $(SUBDIR); do ($(MAKE) -C $$i); done
+	$(shell sed -i 's/MAINFUNCT=no/MAINFUNCT=no/' */makefile)
+	for i in $(SUBDIR); do (cd $$i; $(MAKE) all); done
 
 ifeq ($(strip $(MAINFUNCT)),yes)
 	$(MAKE) master
 else
 	$(MAKE) main
 endif	
-#	$(MAKE) clean
+	$(MAKE) clean
 
 master:
 ifneq ($(strip $(SRC)),)
-	$(CC) $(ARGS) -o main $(SRC) $(SRC2)
+	$(CC) $(ARGS) -o main.exe $(SRC) $(SRC2)
 endif
 
 main:
