@@ -27,7 +27,7 @@ BMPIMAGE	*LoadBitmap(char *filename)
 	
 	rewind(fp);
 	fread(&image->header, sizeof(image->header), 1, fp);
-	if (!check_bmp_header(&image->header))
+	if (!Check_bmp_header(&image->header))
 	{
 		perror("Invalid BMP format.\n");
 		exit(EXIT_FAILURE);	
@@ -178,7 +178,7 @@ void	PrintBitmap_G(BMPIMAGE *image){
 		printf("The image pointor is NULL\n");
 		return;
 	}
-	if (!isGrayBitmapCalculed(image)){
+	if (!IsGrayBitmapCalculed(image)){
 		printf("The gray scale of the bitmap hasn't be calculed. Use CalculBitmapGray().\n");
 		return;
 	}
@@ -243,6 +243,10 @@ void	SaveBitmap_RGB(BMPIMAGE *image, char *filename)
 */
 void	SaveBitmap_G(BMPIMAGE *image, char *filename)
 {
+	if (!IsGrayBitmapCalculed(image)){
+		printf("The gray scale of the bitmap hasn't be calculed. Use CalculBitmapGray().\n");
+		return;
+	}
 	FILE *fp = fopen(filename, "wb");
 
 	fwrite(&image->header, 1, sizeof(image->header), fp);
