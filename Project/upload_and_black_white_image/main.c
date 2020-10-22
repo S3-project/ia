@@ -7,14 +7,16 @@ int	main(){
 	char *out = "../../Ressources/images/test2_g.bmp";
 	BMPIMAGE *image = LoadBitmap(po);
 
-	PrintBitmap_RGB(image);
 	
-	CalculBitmapGray(image);
+	BMPIMAGE *image_g = ToGrayBitmap(image);
 
-	PrintBitmap_G(image);
+	RGB color = GetPixel(image_g, 0, 0);
 
-	SaveBitmap_G(image, out);
+	printf("%d\n", color.R);
+
+	SaveBitmap(image_g, out);
 
 	FreeBitmap(image);
+	FreeBitmap(image_g);
 	return 0;
 }

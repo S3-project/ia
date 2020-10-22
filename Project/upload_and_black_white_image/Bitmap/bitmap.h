@@ -38,23 +38,22 @@ typedef struct  BMP_HEADER_STCT BMPHEADER;
 typedef struct
 {
 	BMPHEADER header; /* The information of the bitmap image*/
-	RGB **data_rgb; /* Matrix that contains the RGBs value of each pixels*/
-	uint8_t **data_g;
+	RGB **data; /* Matrix that contains the RGBs value of each pixels*/
 } BMPIMAGE;
 
 
 /* Fonctions Bitmap */
 
-BMPIMAGE	*LoadBitmap(char *filename);
-void	FreeBitmap(BMPIMAGE *image);
-bool	Check_bmp_header(BMPHEADER* bmp_header);
+BMPIMAGE *LoadBitmap(char *filename);
+bool Check_bmp_header(BMPHEADER* bmp_header);
 
-bool	IsGrayBitmapCalculed(BMPIMAGE *image);
-void	CalculBitmapGray(BMPIMAGE *image);
+void FreeBitmap(BMPIMAGE *image);
 
-void	PrintBitmap_RGB(BMPIMAGE *image);
-void	PrintBitmap_G(BMPIMAGE *image);
+RGB GetPixel(BMPIMAGE *image, uint32_t x, uint32_t y);
 
-void	SaveBitmap_G(BMPIMAGE *image, char *filename);
-void	SaveBitmap_RGB(BMPIMAGE *image, char *filename);
+BMPIMAGE *ToGrayBitmap(BMPIMAGE *image);
+
+void PrintBitmap(BMPIMAGE *image);
+
+void SaveBitmap(BMPIMAGE *image, char *filename);
 #endif

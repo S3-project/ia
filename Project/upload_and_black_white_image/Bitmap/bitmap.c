@@ -34,15 +34,15 @@ BMPIMAGE	*LoadBitmap(char *filename)
 	}
 
 
-	image->data_rgb = malloc(sizeof(RGB*) * image->header.heigth);
-	if (image->data_rgb == NULL){
+	image->data = malloc(sizeof(RGB*) * image->header.heigth);
+	if (image->data == NULL){
 		perror("Allocation error.\n");
 		exit(EXIT_FAILURE);	
 	}
 	for (int i = 0; i < image->header.heigth; i++)
 	{
-		image->data_rgb[i] = malloc(sizeof(RGB) * image->header.width);
-		if (image->data_rgb[i] == NULL){
+		image->data[i] = malloc(sizeof(RGB) * image->header.width);
+		if (image->data[i] == NULL){
 			perror("Allocation error.\n");
 			exit(EXIT_FAILURE);	
 		}
@@ -58,14 +58,12 @@ BMPIMAGE	*LoadBitmap(char *filename)
 	for(int i = 0; i < byte_size; i++){
 		uint8_t hex;
 		fread(&hex, 1, 1, fp);
-		if (i == byte_size - 1)
-			printf("%d   ", hex);
 		if (color == 0)
-			image->data_rgb[line][colone].B = hex; 
+			image->data[line][colone].B = hex; 
 		else if (color == 1)
-			image->data_rgb[line][colone].G = hex; 
+			image->data[line][colone].G = hex; 
 		else 
-			image->data_rgb[line][colone].R = hex; 
+			image->data[line][colone].R = hex; 
 		color = (color + 1) % 3;
 		if (color == 0){
 			colone = (colone + 1) % image->header.width;
@@ -88,12 +86,9 @@ BMPIMAGE	*LoadBitmap(char *filename)
 */
 void	FreeBitmap(BMPIMAGE *image){
 	for (int i = 0; i < image->header.heigth; i++){
-		free(image->data_rgb[i]);
-		if (image->data_g != NULL)
-			free(image->data_g[i]);
+		free(image->data[i]);
 	}
-	free(image->data_rgb);
-	free(image->data_g);
+	free(image->data);
 	free(image);
 }
 
@@ -115,37 +110,45 @@ bool	Check_bmp_header(BMPHEADER* bmp_header){
 
 
 /*
-	Calcul the gray scale of the bitmap with this formula : (R+B+G) / 3, using the RGB Matrix "data_rgb"
-	And stock the result in the Matrix "data_g"
+	Return the gray scale of the bitmap with this formula : (R+B+G) / 3, using the RGB Matrix "data"
 */
-void	CalculBitmapGray(BMPIMAGE *image)
+BMPIMAGE	*ToGrayBitmap(BMPIMAGE *image)
 {
-	image->data_g = malloc(sizeof(uint8_t*) * image->header.heigth);
-	if (image->data_g == NULL){
+	BMPIMAGE *new_image = malloc(sizeof(*new_image));
+	if (new_image == NULL){
 		perror("Allocation error.\n");
 		exit(EXIT_FAILURE);	
 	}
-	for (int y = 0; y < image->header.heigth; y++)
+	new_image->header = image->header;
+	new_image->data = malloc(sizeof(RGB*) * new_image->header.heigth);
+	if (new_image->data == NULL){
+		perror("Allocation error.\n");
+		exit(EXIT_FAILURE);	
+	}
+	for (int y = 0; y < new_image->header.heigth; y++)
 	{
-		image->data_g[y] = malloc(sizeof(uint8_t) * image->header.width);
-		if (image->data_g[y] == NULL){
+		new_image->data[y] = malloc(sizeof(RGB) * new_image->header.width);
+		if (new_image->data[y] == NULL){
 			perror("Allocation error.\n");
 			exit(EXIT_FAILURE);	
 		}
-		for (int x = 0; x < image->header.width; x++)
+		for (int x = 0; x < new_image->header.width; x++)
 		{
-			int color = (image->data_rgb[y][x].R + image->data_rgb[y][x].G 
-				+ image->data_rgb[y][x].B) / 3;
-			image->data_g[y][x] = (uint8_t) color;
+			int color = (image->data[y][x].R + image->data[y][x].G 
+				+ image->data[y][x].B) / 3;
+			new_image->data[y][x].R = (uint8_t) color;
+			new_image->data[y][x].G = (uint8_t) color;
+			new_image->data[y][x].B = (uint8_t) color;
 		}
 	}
+	return new_image;
 }
 
 
 /*
-	Print the Matrix of data_rgb on the terminal
+	Print the Matrix of data on the terminal
 */
-void	PrintBitmap_RGB(BMPIMAGE *image)
+void	PrintBitmap(BMPIMAGE *image)
 {
 	if (image == NULL){
 		printf("The image pointor is NULL\n");
@@ -156,9 +159,9 @@ void	PrintBitmap_RGB(BMPIMAGE *image)
 	{
 		for(int x = 0; x < image->header.width; x++){
 			printf("[");
-			printf("%02x ", image->data_rgb[y][x].R);
-			printf("%02x ", image->data_rgb[y][x].G);
-			printf("%02x", image->data_rgb[y][x].B);
+			printf("%02x ", image->data[y][x].R);
+			printf("%02x ", image->data[y][x].G);
+			printf("%02x", image->data[y][x].B);
 			printf("]");
 		}
 		printf("\n");
@@ -168,50 +171,10 @@ void	PrintBitmap_RGB(BMPIMAGE *image)
 
 
 
-
 /*
-	Print the Matrix of data_g on the terminal
-	data_g need to be calculed before with "CalculBitmapGray()"  
+	Save the bitmap ("data")
 */
-void	PrintBitmap_G(BMPIMAGE *image){
-	if (image == NULL){
-		printf("The image pointor is NULL\n");
-		return;
-	}
-	if (!IsGrayBitmapCalculed(image)){
-		printf("The gray scale of the bitmap hasn't be calculed. Use CalculBitmapGray().\n");
-		return;
-	}
-	printf("Bitmap gray size: %dx%d.\n", image->header.width, image->header.heigth);
-	for(int y = 0; y < image->header.heigth; y++)
-	{
-		for(int x = 0; x < image->header.width; x++){
-			printf("[");
-			printf("%02x", image->data_g[y][x]);
-			printf("]");
-		}
-		printf("\n");
-	}
-}
-
-
-
-/*
-	Verify if the gray scale Matrix "data_g" has been calculed
-*/
-bool	IsGrayBitmapCalculed(BMPIMAGE *image){
-	return image->data_g != NULL;
-}
-
-
-
-
-
-
-/*
-	Save the RGB bitmap ("data_rgb")
-*/
-void	SaveBitmap_RGB(BMPIMAGE *image, char *filename)
+void	SaveBitmap(BMPIMAGE *image, char *filename)
 {
 	FILE *fp = fopen(filename, "wb");
 
@@ -223,11 +186,11 @@ void	SaveBitmap_RGB(BMPIMAGE *image, char *filename)
 		for (int x = 0; x < image->header.width; x++){
 			for (int c = 0; c < 3; c++){
 				if (c == 0)
-					fwrite(&image->data_rgb[y][x].B, 1, 1, fp);
+					fwrite(&image->data[y][x].B, 1, 1, fp);
 				else if(c == 1)
-					fwrite(&image->data_rgb[y][x].G, 1, 1, fp);
+					fwrite(&image->data[y][x].G, 1, 1, fp);
 				else {
-					fwrite(&image->data_rgb[y][x].R, 1, 1, fp);
+					fwrite(&image->data[y][x].R, 1, 1, fp);
 				}
 			}
 		}
@@ -237,29 +200,11 @@ void	SaveBitmap_RGB(BMPIMAGE *image, char *filename)
 }
 
 
-
-/*
-	Save the RGB bitmap ("data_g")
-*/
-void	SaveBitmap_G(BMPIMAGE *image, char *filename)
+RGB	GetPixel(BMPIMAGE *image, uint32_t x, uint32_t y)
 {
-	if (!IsGrayBitmapCalculed(image)){
-		printf("The gray scale of the bitmap hasn't be calculed. Use CalculBitmapGray().\n");
-		return;
+	if (x < 0 || y < 0 || x >= image->header.width || y >= image->header.heigth){
+		perror("GetPixel params out of bounds.\n");
+		exit(EXIT_FAILURE);	
 	}
-	FILE *fp = fopen(filename, "wb");
-
-	fwrite(&image->header, 1, sizeof(image->header), fp);
-	int offset_endLine = (4 - (image->header.width * 3) % 4) % 4;
-
-	uint8_t null[3] = {0,0,0};
-	for (int y = image->header.heigth - 1; y >= 0; y--){
-		for (int x = 0; x < image->header.width; x++){
-			fwrite(&image->data_g[y][x], 1, 1, fp);
-			fwrite(&image->data_g[y][x], 1, 1, fp);
-			fwrite(&image->data_g[y][x], 1, 1, fp);
-		}
-		fwrite(&null, 1, offset_endLine, fp);
-	}
-	fclose(fp);
+	return image->data[y][x];
 }
