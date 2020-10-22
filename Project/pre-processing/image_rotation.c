@@ -14,31 +14,31 @@ int CreateImageNew(BMPIMAGE *source, uint32_t start, uint32_t end, char *str)
         perror("Allocation error.\n");
         exit(EXIT_FAILURE);
     }
-
+    image->header = source->header;
+    image->header.heigth = end - start;
     image->data = malloc(sizeof(RGB*) * image->header.heigth);
     if (image->data == NULL){
         perror("Allocation error.\n");
         exit(EXIT_FAILURE);
     }
-    image->header = source->header;
-    image->header.heigth = end - start;
+
     image->header.bfSize = 122 + (3* image->header.width +(4 - (image->header.width * 3) % 4) % 4)*image->header.heigth;
 
-
+    printf("%d\n", image->header.heigth);
 
     for(uint32_t y = start; y < end; y++)
     {
-        image->data[y] = malloc(sizeof(RGB) * image->header.width);
-        if (image->data[y] == NULL){
+        image->data[y - start] = malloc(sizeof(RGB) * image->header.width);
+        if (image->data[y - start] == NULL){
             perror("Allocation error.\n");
             exit(EXIT_FAILURE);
         }
         for(uint32_t x = 0; x < source->header.width; x++)
         {
-            image->data[y][x] = source->data[y][x];
+            image->data[y - start][x] = source->data[y][x];
         }
     }
-    printf("here");
+    printf("%s\n", str);
     SaveBitmap(image, str);
 
     FreeBitmap(image);
@@ -87,11 +87,10 @@ int GetLines (/*BMPIMAGE *image*/)
     uint32_t k = '0';
     for(uint32_t j = 0; j < i; j ++)
     {
-        CreateImageNew(image, lines[1], lines[2], tab);
+        CreateImageNew(image, lines[j], lines[j+1], tab);
         k++;
         tab[0] = k;
     }
-    printf("%lu\n", i);
     FreeBitmap(image);
     return 0;
 }
