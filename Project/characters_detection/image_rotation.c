@@ -57,9 +57,10 @@ int GetLines (/*BMPIMAGE *image*/)
     white.B = 255;
     white.R = 255;
     uint32_t x = 0;
+    int above = 1;
 
 
-    for(uint32_t y = 0; y < image->header.heigth; y++)
+    /*for(uint32_t y = 0; y < image->header.heigth; y++)
     {
         x = 0;
 
@@ -81,11 +82,62 @@ int GetLines (/*BMPIMAGE *image*/)
         {
             followingWhite = 0;
         }
+    }*/
+
+    while(x < image->header.width && GetPixel(image, x, 0).R == white.R && GetPixel(image, x, 0).G == white.G && GetPixel(image, x, 0).B == white.B)
+    {
+        x++;
+    }
+    if (x != image->header.width)
+        above = 0;
+
+    for(uint32_t y = 0; y < image->header.heigth; y++)
+    {
+        x = 0;
+        if(above == 1)
+        {
+            while(x < image->header.width && GetPixel(image, x, y).R == white.R && GetPixel(image, x, y).G == white.G && GetPixel(image, x, y).B == white.B)
+            {
+                x++;
+            }
+            if(x != image->header.width)
+            {
+                above = 0;
+                if(y > 0)
+                    lines[i] = y;
+                else
+                    lines[i] = 0;
+                i++;
+            }
+        }
+        else
+        {
+            while(x < image->header.width && (GetPixel(image, x, y).R == 0 && GetPixel(image, x, y).G == 0 && GetPixel(image, x, y).B == 0))
+            {
+                x++;
+            }
+            if(x != image->header.width)
+            {
+                above = 1;
+                if(y > 0)
+                    lines[i] = y - 1;
+                else
+                    lines[i] = 0;
+                i++;
+            }
+            else if(y == image->header.heigth)
+            {
+                lines[i] = y;
+                i++;
+            }
+
+        }
     }
 
     char tab[6] = "0.bmp\0";
     uint32_t k = '0';
-    for(uint32_t j = 0; j < i; j ++)
+    printf("%d\n", i);
+    for(uint32_t j = 0; j < i - 1; j ++)
     {
         CreateImageNew(image, lines[j], lines[j+1], tab);
         k++;

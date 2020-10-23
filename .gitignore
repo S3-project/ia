@@ -53,3 +53,5 @@ dkms.conf
 
 #others
 .idea
+.out
+.exe
