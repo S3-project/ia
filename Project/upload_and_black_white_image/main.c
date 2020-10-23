@@ -10,12 +10,10 @@ int	main(){
 	BMPIMAGE *image = LoadBitmap(po);
 
 	
-<<<<<<< HEAD
 	//	BMPIMAGE *image_g = ToGrayBitmap(image);
 
 
 	SaveBitmap(image, out);
-=======
 	BMPIMAGE *image_g = ToGrayBitmap(image);
 	//BMPIMAGE *image_rmc = ToBlackWhite(image_g);
 
@@ -25,14 +23,10 @@ int	main(){
 
 	SaveBitmap(image_g, out);
 	//SaveBitmap(image_rmc, out2);
->>>>>>> 583a91f3ee9b814187b3cf816c6dd41ecb898473
 
 //	FreeBitmap(image);
 	FreeBitmap(image);
-<<<<<<< HEAD
-=======
 	FreeBitmap(image_g);
 	//FreeBitmap(image_rmc);
->>>>>>> 583a91f3ee9b814187b3cf816c6dd41ecb898473
 	return 0;
 }
