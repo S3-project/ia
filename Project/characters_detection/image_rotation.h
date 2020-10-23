@@ -4,5 +4,5 @@
 
 #ifndef IA_IMAGE_ROTATION_H
 #define IA_IMAGE_ROTATION_H
-
+int test ();
 #endif //IA_IMAGE_ROTATION_H

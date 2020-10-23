@@ -51,6 +51,8 @@ void FreeBitmap(BMPIMAGE *image);
 
 RGB GetPixel(BMPIMAGE *image, uint32_t x, uint32_t y);
 
+void GetRGB(RGB rgb, uint8_t *r, uint8_t *g, uint8_t *b);
+
 BMPIMAGE *ToGrayBitmap(BMPIMAGE *image);
 
 void PrintBitmap(BMPIMAGE *image);
