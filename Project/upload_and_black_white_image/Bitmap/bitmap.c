@@ -222,3 +222,43 @@ void GetRGB(RGB rgb, uint8_t *r, uint8_t *g, uint8_t *b)
 	*g=rgb.G;
 	*b=rgb.B;
 }
+
+
+
+BMPIMAGE *SubBitmap(BMPIMAGE *image, uint32_t x, uint32_t y, uint32_t lx, uint32_t ly)
+{
+	if (x < 0 || y < 0 || lx < 1 || ly < 1 || x+lx >= image->header.width || y+ly >= image->header.heigth){
+		perror("GetPixel params out of bounds.\n");
+		exit(EXIT_FAILURE);	
+	}
+	BMPIMAGE *new_image = malloc(sizeof(*new_image));
+	if (new_image == NULL){
+		perror("Allocation error.\n");
+		exit(EXIT_FAILURE);	
+	}
+	new_image->header = image->header;
+	new_image->header.width = lx;
+	new_image->header.height = ly;
+	new_image->header.bfSize = 14 + 108 + (3*new_image->header.width + 
+			(4 - (new_image->header.width*3) %4)%4) * new_image->header.heigth;
+	new_image->data = malloc(sizeof(RGB*) * new_image->header.heigth);
+	if (new_image->data == NULL){
+		perror("Allocation error.\n");
+		exit(EXIT_FAILURE);	
+	}
+	for (int yy = 0; yy < ly; yy++)
+	{
+		new_image->data[yy] = malloc(sizeof(RGB) * lx);
+		if (new_image->data[yy] == NULL){
+			perror("Allocation error.\n");
+			exit(EXIT_FAILURE);	
+		}
+		for (int xx = 0; xx < lx; xx++)
+		{
+			new_image->data[yy][xx] = image->data[y+yy][x+xx];
+		}
+	}
+	return new_image;
+}
+
+
