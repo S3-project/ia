@@ -200,6 +200,9 @@ void	SaveBitmap(BMPIMAGE *image, char *filename)
 }
 
 
+/*
+	Get the color by an RGB structure from the position in the matrix data of the image.
+*/
 RGB	GetPixel(BMPIMAGE *image, uint32_t x, uint32_t y)
 {
 	if (x < 0 || y < 0 || x >= image->header.width || y >= image->header.heigth){
@@ -207,4 +210,15 @@ RGB	GetPixel(BMPIMAGE *image, uint32_t x, uint32_t y)
 		exit(EXIT_FAILURE);	
 	}
 	return image->data[y][x];
+}
+
+/*
+	Get the r,g,b values of the RGB structure
+*/
+void GetRGB(RGB rgb, uint8_t *r, uint8_t *g, uint8_t *b)
+{
+
+	*r=rgb.R;
+	*g=rgb.G;
+	*b=rgb.B;
 }
