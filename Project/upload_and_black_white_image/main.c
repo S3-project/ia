@@ -8,15 +8,12 @@ int	main(){
 	BMPIMAGE *image = LoadBitmap(po);
 
 	
-	BMPIMAGE *image_g = ToGrayBitmap(image);
+	//	BMPIMAGE *image_g = ToGrayBitmap(image);
 
-	RGB color = GetPixel(image_g, 0, 0);
 
-	printf("%d\n", color.R);
+	SaveBitmap(image, out);
 
-	SaveBitmap(image_g, out);
-
+//	FreeBitmap(image);
 	FreeBitmap(image);
-	FreeBitmap(image_g);
 	return 0;
 }
