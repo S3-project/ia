@@ -57,5 +57,6 @@ BMPIMAGE *ToGrayBitmap(BMPIMAGE *image);
 
 void PrintBitmap(BMPIMAGE *image);
 
+BMPIMAGE *SubBitmap(BMPIMAGE *image, uint32_t x, uint32_t y, uint32_t lx, uint32_t ly);
 void SaveBitmap(BMPIMAGE *image, char *filename);
 #endif
