@@ -9,24 +9,17 @@ int	main(){
 	char *out2 = "../../Ressources/images/test2_rmc.bmp";
 	BMPIMAGE *image = LoadBitmap(po);
 
-	
-	//	BMPIMAGE *image_g = ToGrayBitmap(image);
-
-
-	SaveBitmap(image, out);
 	BMPIMAGE *image_g = ToGrayBitmap(image);
-	//BMPIMAGE *image_rmc = ToBlackWhite(image_g);
 
-	//RGB color = GetPixel(image_g, 0, 0);
 
-	//printf("%d\n", color.R);
+	BMPIMAGE *image_sub = SubBitmap(image_g, 0, 0, image_g->header.width, 500);
+
 
 	SaveBitmap(image_g, out);
-	//SaveBitmap(image_rmc, out2);
+	SaveBitmap(image_sub, out2);
 
-//	FreeBitmap(image);
 	FreeBitmap(image);
+	FreeBitmap(image_sub);
 	FreeBitmap(image_g);
-	//FreeBitmap(image_rmc);
 	return 0;
 }
