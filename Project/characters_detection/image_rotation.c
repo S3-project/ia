@@ -20,6 +20,21 @@ int IsLineWhite(BMPIMAGE *image, uint32_t y, uint32_t width)
     return white;
 }
 
+
+int IsRowWhite(BMPIMAGE *image, uint32_t x, uint32_t height)
+{
+    uint32_t y = 0;
+    int white = 1;
+    while(y < height && white == 1 && GetPixel(image, x, y).R == 255 && GetPixel(image, x, y).G == 255 && GetPixel(image, x, y).B == 255)
+        y++;
+
+    if(y != height)
+        white = 0;
+
+    return white;
+}
+
+
 char*  IntToNameFile(int64_t x, char *name)                    //transform the int to a string and add the extension file
 {
     char extension[5] = ".bmp\0";
@@ -37,19 +52,20 @@ char*  IntToNameFile(int64_t x, char *name)                    //transform the i
     return name;
 }
 
-int GetLines (/*char *path*/)
+
+BMPIMAGE GetLines (/*char *path*/)
 {
-    BMPIMAGE *image = LoadBitmap("../../Ressources/images/text2.bmp");
+    BMPIMAGE *image = LoadBitmap("../../Ressources/images/text3.bmp");
     uint32_t lines[image->header.heigth];
-    uint32_t i = 0;
+    uint32_t numberOfLines = 0;
     int above = 1;                                      //indicates if the current we are in inter-lines
 
 
     if (IsLineWhite(image, 0, image->header.width) == 0)
     {
         above = 0;
-        lines[i] = 0;
-        i++;
+        lines[numberOfLines] = 0;
+        numberOfLines++;
     }
 
     for(uint32_t y = 1; y < image->header.heigth; y++)
@@ -57,40 +73,90 @@ int GetLines (/*char *path*/)
         if(above == 1 && IsLineWhite(image, y, image->header.width) == 0)
         {
             above = 0;
-            lines[i] = y;
-            i++;
+            lines[numberOfLines] = y;
+            numberOfLines++;
         }
         else if(above == 0 && IsLineWhite(image, y, image->header.width) == 1)
         {
             above = 1;
-            lines[i] = y - 1;
-            i++;
+            lines[numberOfLines] = y - 1;
+            numberOfLines++;
         }
     }
 
     if(above == 0)
     {
-        lines[i] = (image->header.heigth) - 1;
-        i++;
+        lines[numberOfLines] = (image->header.heigth) - 1;
+        numberOfLines++;
     }
 
     int64_t num = 0;
     char name[10 + 5] = "";
 
-    for(uint32_t j = 0; j < i - 1; j += 2)
+    BMPIMAGE imgLines[numberOfLines];
+
+    for(uint32_t j = 0; j < numberOfLines - 1; j += 2)
     {
         BMPIMAGE *subImage = SubBitmap(image,0,lines[j], image->header.width, lines[j+1] - lines[j]);
-        SaveBitmap(subImage,IntToNameFile(num, name));
+        //SaveBitmap(subImage,IntToNameFile(num, name));
+        imgLines[j] = *subImage;
         FreeBitmap(subImage);
         num++;
     }
     FreeBitmap(image);
-    return 0;
+    return imgLines;
 }
 
 
+void GetChars(BMPIMAGE *lines)
+{
+    for(uint32_t i = 0; i < sizeof(lines); i++)
+    {
+        BMPIMAGE *line = &lines[i];
+        uint32_t row[line->header.width];
+        uint32_t numberOfChar = 0;
+        int before = 1;
+
+        if (IsRowWhite(line, 0, line->header.heigth) == 0)
+        {
+            before = 0;
+            row[numberOfChar] = 0;
+            numberOfChar++;
+        }
+
+        for(uint32_t x = 1; x < line->header.width; x++)
+        {
+            if(before == 1 && IsRowWhite(line, x, line->header.width) == 0)
+            {
+                before = 0;
+                row[numberOfChar] = x;
+                numberOfChar++;
+            }
+            else if(before == 0 && IsLineWhite(line, x, line->header.width) == 1)
+            {
+                before = 1;
+                row[numberOfChar] = x - 1;
+                numberOfChar++;
+            }
+        }
+
+        if(before == 0)
+        {
+            row[numberOfChar] = (line->header.width) - 1;
+            numberOfChar++;
+        }
+    }
+}
+
 int main(){
-    GetLines();
+    BMPIMAGE  imgLines[15] = GetLines();
+    //BMPIMAGE *test = &imgLines[0];
+    //printf("%d\n", test->header.heigth);
+    //printf("%d\n", test->header.heigth);
+    //SaveBitmap(test, "TEST.bmp");
+    printf("here");
+    free(imgLines);
+
     return 0;
 }
 
