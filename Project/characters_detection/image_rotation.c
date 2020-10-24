@@ -38,7 +38,7 @@ int IsRowWhite(BMPIMAGE *image, uint32_t x, uint32_t height)
 char*  IntToNameFile(int64_t x, char *name)                    //transform the int to a string and add the extension file
 {
     char extension[5] = ".bmp\0";
-    ltoa(x, name, 10);
+    sprintf(name, "%ld", x);
 
     int j,k;
     for (j = 0; name[j]!='\0'; j++);
@@ -53,9 +53,9 @@ char*  IntToNameFile(int64_t x, char *name)                    //transform the i
 }
 
 
-BMPIMAGE GetLines (/*char *path*/)
+BMPIMAGE* GetLines (/*char *path*/)
 {
-    BMPIMAGE *image = LoadBitmap("../../Ressources/images/text3.bmp");
+    BMPIMAGE *image = LoadBitmap("../../Ressources/images/text.bmp");
     uint32_t lines[image->header.heigth];
     uint32_t numberOfLines = 0;
     int above = 1;                                      //indicates if the current we are in inter-lines
@@ -68,7 +68,7 @@ BMPIMAGE GetLines (/*char *path*/)
         numberOfLines++;
     }
 
-    for(uint32_t y = 1; y < image->header.heigth; y++)
+    for(uint32_t y = 1; y < (uint32_t)image->header.heigth; y++)
     {
         if(above == 1 && IsLineWhite(image, y, image->header.width) == 0)
         {
@@ -91,9 +91,9 @@ BMPIMAGE GetLines (/*char *path*/)
     }
 
     int64_t num = 0;
-    char name[10 + 5] = "";
+    //char name[10 + 5] = "";
 
-    BMPIMAGE imgLines[numberOfLines];
+    BMPIMAGE *imgLines = malloc(numberOfLines);
 
     for(uint32_t j = 0; j < numberOfLines - 1; j += 2)
     {
@@ -124,7 +124,7 @@ void GetChars(BMPIMAGE *lines)
             numberOfChar++;
         }
 
-        for(uint32_t x = 1; x < line->header.width; x++)
+        for(uint32_t x = 1; x < (uint32_t)line->header.width; x++)
         {
             if(before == 1 && IsRowWhite(line, x, line->header.width) == 0)
             {
@@ -149,7 +149,7 @@ void GetChars(BMPIMAGE *lines)
 }
 
 int main(){
-    BMPIMAGE  imgLines[15] = GetLines();
+    BMPIMAGE  *imgLines = GetLines();
     //BMPIMAGE *test = &imgLines[0];
     //printf("%d\n", test->header.heigth);
     //printf("%d\n", test->header.heigth);

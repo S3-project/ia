@@ -13,7 +13,7 @@ all:
 	$(MAKE) clean
 
 main:
-	$(CC) $(ARGS) -o ./$(DIRNAME).exe $(SRC) 
+	$(CC) $(ARGS) -o ./$(DIRNAME).exe $(ADD) $(OBJ) $(SRC) 
 
 clean:
 	for i in $(OBJ);do(rm $$i);done
