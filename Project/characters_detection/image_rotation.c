@@ -7,141 +7,82 @@
 #include <stdlib.h>
 #include "../upload_and_black_white_image/Bitmap/bitmap.h"
 
-int CreateImageNew(BMPIMAGE *source, uint32_t start, uint32_t end, char *str)
+int IsLineWhite(BMPIMAGE *image, uint32_t y, uint32_t width)
 {
-    BMPIMAGE *image = malloc(sizeof(*image));
-    if (image == NULL){
-        perror("Allocation error.\n");
-        exit(EXIT_FAILURE);
-    }
-    image->header = source->header;
-    image->header.heigth = end - start;
-    image->data = malloc(sizeof(RGB*) * image->header.heigth);
-    if (image->data == NULL){
-        perror("Allocation error.\n");
-        exit(EXIT_FAILURE);
-    }
+    uint32_t x = 0;
+    int white = 1;
+    while(x < width && white == 1 && GetPixel(image, x, y).R == 255 && GetPixel(image, x, y).G == 255 && GetPixel(image, x, y).B == 255)
+        x++;
 
-    image->header.bfSize = 122 + (3* image->header.width +(4 - (image->header.width * 3) % 4) % 4)*image->header.heigth;
+    if(x != width)
+        white = 0;
 
-    printf("%d\n", image->header.heigth);
-
-    for(uint32_t y = start; y < end; y++)
-    {
-        image->data[y - start] = malloc(sizeof(RGB) * image->header.width);
-        if (image->data[y - start] == NULL){
-            perror("Allocation error.\n");
-            exit(EXIT_FAILURE);
-        }
-        for(uint32_t x = 0; x < source->header.width; x++)
-        {
-            image->data[y - start][x] = source->data[y][x];
-        }
-    }
-    printf("%s\n", str);
-    SaveBitmap(image, str);
-
-    FreeBitmap(image);
-    return 0;
+    return white;
 }
 
-
-int GetLines (/*BMPIMAGE *image*/)
+char*  IntToNameFile(int64_t x, char *name)                    //transform the int to a string and add the extension file
 {
-    BMPIMAGE *image = LoadBitmap("../../Ressources/images/text.bmp");
+    char extension[5] = ".bmp\0";
+    ltoa(x, name, 10);
+
+    int j,k;
+    for (j = 0; name[j]!='\0'; j++);
+
+    for (k = 0; extension[k]!='\0'; k++, j++)
+    {
+        name[j] = extension[k];
+    }
+    name[j] = '\0';
+
+    return name;
+}
+
+int GetLines (/*char *path*/)
+{
+    BMPIMAGE *image = LoadBitmap("../../Ressources/images/text2.bmp");
     uint32_t lines[image->header.heigth];
     uint32_t i = 0;
-    uint32_t followingWhite = 0;
-    RGB white;
-    white.G = 255;
-    white.B = 255;
-    white.R = 255;
-    uint32_t x = 0;
-    int above = 1;
+    int above = 1;                                      //indicates if the current we are in inter-lines
 
 
-    /*for(uint32_t y = 0; y < image->header.heigth; y++)
+    if (IsLineWhite(image, 0, image->header.width) == 0)
     {
-        x = 0;
+        above = 0;
+        lines[i] = 0;
+        i++;
+    }
 
-        while(x < image->header.width && GetPixel(image, x, y).R == white.R && GetPixel(image, x, y).G == white.G && GetPixel(image, x, y).B == white.B)
+    for(uint32_t y = 1; y < image->header.heigth; y++)
+    {
+        if(above == 1 && IsLineWhite(image, y, image->header.width) == 0)
         {
-            x++;
-        }
-        if(x == image->header.width && followingWhite == 0)
-        {
+            above = 0;
             lines[i] = y;
             i++;
-            followingWhite++;
         }
-        else if(x == image->header.width)
+        else if(above == 0 && IsLineWhite(image, y, image->header.width) == 1)
         {
-            followingWhite++;
-        }
-        else
-        {
-            followingWhite = 0;
-        }
-    }*/
-
-    while(x < image->header.width && GetPixel(image, x, 0).R == white.R && GetPixel(image, x, 0).G == white.G && GetPixel(image, x, 0).B == white.B)
-    {
-        x++;
-    }
-    if (x != image->header.width)
-        above = 0;
-
-    for(uint32_t y = 0; y < image->header.heigth; y++)
-    {
-        x = 0;
-        if(above == 1)
-        {
-            while(x < image->header.width && GetPixel(image, x, y).R == white.R && GetPixel(image, x, y).G == white.G && GetPixel(image, x, y).B == white.B)
-            {
-                x++;
-            }
-            if(x != image->header.width)
-            {
-                above = 0;
-                if(y > 0)
-                    lines[i] = y;
-                else
-                    lines[i] = 0;
-                i++;
-            }
-        }
-        else
-        {
-            while(x < image->header.width && (GetPixel(image, x, y).R == 0 && GetPixel(image, x, y).G == 0 && GetPixel(image, x, y).B == 0))
-            {
-                x++;
-            }
-            if(x != image->header.width)
-            {
-                above = 1;
-                if(y > 0)
-                    lines[i] = y - 1;
-                else
-                    lines[i] = 0;
-                i++;
-            }
-            else if(y == image->header.heigth)
-            {
-                lines[i] = y;
-                i++;
-            }
-
+            above = 1;
+            lines[i] = y - 1;
+            i++;
         }
     }
 
-    char tab[6] = "0.bmp\0";
-    uint32_t k = '0';
-    printf("%d\n", i);
-    for(uint32_t j = 0; j < i - 1; j ++)
+    if(above == 0)
     {
-        CreateImageNew(image, lines[j], lines[j+1], tab);
-        k++;
-        tab[0] = k;
+        lines[i] = (image->header.heigth) - 1;
+        i++;
+    }
+
+    int64_t num = 0;
+    char name[10 + 5] = "";
+
+    for(uint32_t j = 0; j < i - 1; j += 2)
+    {
+        BMPIMAGE *subImage = SubBitmap(image,0,lines[j], image->header.width, lines[j+1] - lines[j]);
+        SaveBitmap(subImage,IntToNameFile(num, name));
+        FreeBitmap(subImage);
+        num++;
     }
     FreeBitmap(image);
     return 0;
