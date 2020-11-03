@@ -63,6 +63,7 @@ void SaveChar(BMPIMAGE **chars, size_t *size)
         SaveBitmap(chars[i], IntToNameFile(num, number));
 }
 
+
 BMPIMAGE ** GetLines (BMPIMAGE *image, size_t *size)
 {
     uint32_t lines[image->header.heigth];
@@ -169,13 +170,16 @@ BMPIMAGE ** GetChars(BMPIMAGE **lines, size_t *sizeLines, size_t *sizeChar)
 }
 
 
-BMPIMAGE ** DetectChars(BMPIMAGE *image)
+BMPIMAGE ** DetectChars(BMPIMAGE *image, int print)
 {
     size_t mallocSizeLines = 0;
     size_t mallocSizeChars = 0;
 
     BMPIMAGE **lines = GetLines(image, &mallocSizeLines);
     BMPIMAGE **chars = GetChars(lines, &mallocSizeLines, &mallocSizeChars);
+
+    if(print == 1)
+        SaveChar(chars, &mallocSizeChars);
 
     for(size_t i = 0; i < mallocSizeLines; i++)
         FreeBitmap(lines[i]);
