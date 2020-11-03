@@ -22,8 +22,8 @@ struct BMP_HEADER_STCT
 	uint16_t unused2;
 	uint32_t imageDataOffset; /* Offset to the start of image data_rgb */
 	uint32_t headerSize; /* The size of the second part of the header in bytes*/
-	int32_t width; /* The width of the image in pixels*/
-	int32_t heigth; /* The heigth of the image in pixels */
+	uint32_t width; /* The width of the image in pixels*/
+	uint32_t heigth; /* The heigth of the image in pixels */
 	uint16_t num_planes;
 	uint16_t bits_per_pixel; /* The size of an unique pixel. need to be 24 bits*/
 	uint32_t compression;
