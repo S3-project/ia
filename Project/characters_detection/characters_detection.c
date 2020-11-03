@@ -48,27 +48,23 @@ char*  IntToNameFile(int64_t x, char *name)                    //transform the i
     for (j = 0; name[j]!='\0'; j++);
 
     for (k = 0; extension[k]!='\0'; k++, j++)
-    {
         name[j] = extension[k];
-    }
     name[j] = '\0';
 
     return name;
 }
 
-void PrintChar(BMPIMAGE **chars, size_t *size, char filename[])
+void SaveChar(BMPIMAGE **chars, size_t *size)
 {
     uint64_t num = 0;
-    char name [10 + 5];
+    char number[10 + 5];
+
     for(size_t i = 0; i < *size; i++, num++)
-    {
-        SaveBitmap(chars[i],IntToNameFile(num, name));
-    }
+        SaveBitmap(chars[i], IntToNameFile(num, number));
 }
 
-BMPIMAGE ** GetLines (char *path, size_t *size)
+BMPIMAGE ** GetLines (BMPIMAGE *image, size_t *size)
 {
-    BMPIMAGE *image = LoadBitmap(path);
     uint32_t lines[image->header.heigth];
     uint32_t numberOfLines = 0;
     int above = 1;                                      //indicates if the current we are in inter-lines
@@ -119,7 +115,6 @@ BMPIMAGE ** GetLines (char *path, size_t *size)
 BMPIMAGE ** GetChars(BMPIMAGE **lines, size_t *sizeLines, size_t *sizeChar)
 {
     uint64_t maxChar = 0;
-    size_t k = 0;
     for(size_t i = 0; i < *sizeLines; i++)
         maxChar += lines[i]->header.width;
 
@@ -160,38 +155,32 @@ BMPIMAGE ** GetChars(BMPIMAGE **lines, size_t *sizeLines, size_t *sizeChar)
             numberOfChar++;
         }
 
+        for(size_t j = 0; j < numberOfChar; j += 2)
+            temporaire[*sizeChar + j / 2] = SubBitmap(line,row[j],0, row[j + 1] - row[j], line->header.heigth);
+
         *sizeChar += numberOfChar / 2;
-
-
-        for(size_t j = 0; j < numberOfChar; j += 2, k++)
-            temporaire[k + j / 2] = SubBitmap(line,row[j],0, row[j + 1] - row[j], line->header.heigth);
     }
 
     BMPIMAGE **imgChar = malloc(sizeof(*imgChar) * *sizeChar);
     for(size_t i = 0; i < *sizeChar; i++)
-    {
         imgChar[i] = temporaire[i];
-    }
-    //free(temporaire);
+    free(temporaire);
     return imgChar;
 }
 
-int main(){
+
+BMPIMAGE ** DetectChars(BMPIMAGE *image)
+{
     size_t mallocSizeLines = 0;
     size_t mallocSizeChars = 0;
 
-    BMPIMAGE **lines = GetLines("../../Ressources/images/text.bmp", &mallocSizeLines);
+    BMPIMAGE **lines = GetLines(image, &mallocSizeLines);
     BMPIMAGE **chars = GetChars(lines, &mallocSizeLines, &mallocSizeChars);
-    //PrintChar(chars, &mallocSizeChars, "./Test");
-
 
     for(size_t i = 0; i < mallocSizeLines; i++)
         FreeBitmap(lines[i]);
-    for(size_t i = 0; i < mallocSizeChars; i++)
-        //FreeBitmap(chars[i]);
-    //free(lines);
-    //free(chars);
+    free(lines);
 
-    return 0;
+    return chars;
 }
 
