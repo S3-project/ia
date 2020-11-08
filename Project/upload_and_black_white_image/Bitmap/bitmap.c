@@ -39,7 +39,7 @@ BMPIMAGE	*LoadBitmap(char *filename)
 		perror("Allocation error.\n");
 		exit(EXIT_FAILURE);	
 	}
-	for (uint32_t i = 0; i < image->header.heigth; i++)
+	for (int i = 0; i < image->header.heigth; i++)
 	{
 		image->data[i] = malloc(sizeof(RGB) * image->header.width);
 		if (image->data[i] == NULL){
@@ -85,7 +85,7 @@ BMPIMAGE	*LoadBitmap(char *filename)
 	Free the BMPIMAGE from the memory
 */
 void	FreeBitmap(BMPIMAGE *image){
-	for (uint32_t i = 0; i < image->header.heigth; i++){
+	for (int i = 0; i < image->header.heigth; i++){
 		free(image->data[i]);
 	}
 	free(image->data);
@@ -125,14 +125,14 @@ BMPIMAGE	*ToGrayBitmap(BMPIMAGE *image)
 		perror("Allocation error.\n");
 		exit(EXIT_FAILURE);	
 	}
-	for (uint32_t y = 0; y < new_image->header.heigth; y++)
+	for (int y = 0; y < new_image->header.heigth; y++)
 	{
 		new_image->data[y] = malloc(sizeof(RGB) * new_image->header.width);
 		if (new_image->data[y] == NULL){
 			perror("Allocation error.\n");
 			exit(EXIT_FAILURE);	
 		}
-		for (uint32_t x = 0; x < new_image->header.width; x++)
+		for (int x = 0; x < new_image->header.width; x++)
 		{
 			int color = (image->data[y][x].R + image->data[y][x].G 
 				+ image->data[y][x].B) / 3;
@@ -155,9 +155,9 @@ void	PrintBitmap(BMPIMAGE *image)
 		return;
 	}
 	printf("Bitmap size: %dx%d.\n", image->header.width, image->header.heigth);
-	for(uint32_t y = 0; y < image->header.heigth; y++)
+	for(int y = 0; y < image->header.heigth; y++)
 	{
-		for(uint32_t x = 0; x < image->header.width; x++){
+		for(int x = 0; x < image->header.width; x++){
 			printf("[");
 			printf("%02x ", image->data[y][x].R);
 			printf("%02x ", image->data[y][x].G);
@@ -180,8 +180,8 @@ void	SaveBitmap(BMPIMAGE *image, char *filename)
 	fwrite(&image->header, 1, sizeof(image->header), fp);
 	int offset_endLine = (4 - (image->header.width * 3) % 4) % 4;
 	uint8_t null[3] = {0,0,0};
-	for (uint32_t y = image->header.heigth - 1; y+1 > 0; y--){
-		for (uint32_t x = 0; x < image->header.width; x++){
+	for (int y = image->header.heigth - 1; y >= 0; y--){
+		for (int x = 0; x < image->header.width; x++){
 			for (int c = 0; c < 3; c++){
 				if (c == 0)
 					fwrite(&image->data[y][x].B, 1, 1, fp);
@@ -203,7 +203,7 @@ void	SaveBitmap(BMPIMAGE *image, char *filename)
 */
 RGB	GetPixel(BMPIMAGE *image, uint32_t x, uint32_t y)
 {
-	if (x >= image->header.width || y >= image->header.heigth){
+	if (x < 0 || y < 0 || x >= image->header.width || y >= image->header.heigth){
 		perror("GetPixel params out of bounds.\n");
 		exit(EXIT_FAILURE);	
 	}
@@ -225,7 +225,7 @@ void GetRGB(RGB rgb, uint8_t *r, uint8_t *g, uint8_t *b)
 
 BMPIMAGE *SubBitmap(BMPIMAGE *image, uint32_t x, uint32_t y, uint32_t lx, uint32_t ly)
 {
-	if (lx == 0 || ly == 0 || x+lx > image->header.width || y+ly > image->header.heigth){
+	if (x < 0 || y < 0 || lx < 1 || ly < 1 || x+lx > image->header.width || y+ly > image->header.heigth){
 		perror("GetPixel params out of bounds.\n");
 		exit(EXIT_FAILURE);	
 	}
@@ -244,14 +244,14 @@ BMPIMAGE *SubBitmap(BMPIMAGE *image, uint32_t x, uint32_t y, uint32_t lx, uint32
 		perror("Allocation error.\n");
 		exit(EXIT_FAILURE);	
 	}
-	for (uint32_t yy = 0; yy < ly; yy++)
+	for (int yy = 0; yy < ly; yy++)
 	{
 		new_image->data[yy] = malloc(sizeof(RGB) * lx);
 		if (new_image->data[yy] == NULL){
 			perror("Allocation error.\n");
 			exit(EXIT_FAILURE);	
 		}
-		for (uint32_t xx = 0; xx < lx; xx++)
+		for (int xx = 0; xx < lx; xx++)
 		{
 			new_image->data[yy][xx] = image->data[y+yy][x+xx];
 		}
