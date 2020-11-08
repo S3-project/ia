@@ -61,14 +61,14 @@ BMPIMAGE *ToBlackWhite(BMPIMAGE *image)
 	uint8_t r;
 	uint8_t g;
 	uint8_t b;
-	for(int i =0; i<new_image->header.heigth;i++)
+	for(uint32_t i =0; i<new_image->header.heigth;i++)
 	{
 		new_image->data[i] = malloc(sizeof(RGB) * new_image->header.width);
 		if (new_image->data[i] == NULL){
 			perror("Allocation error.\n");
 			exit(EXIT_FAILURE);
 		}
-		for(int j=0; j<new_image->header.width;j++)
+		for(uint32_t j=0; j<new_image->header.width;j++)
 		{
 			RGB rgb =GetPixel(image,j,i);
 			GetRGB(rgb,&r,&g,&b);
