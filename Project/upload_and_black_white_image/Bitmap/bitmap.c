@@ -177,10 +177,8 @@ void	PrintBitmap(BMPIMAGE *image)
 void	SaveBitmap(BMPIMAGE *image, char *filename)
 {
 	FILE *fp = fopen(filename, "wb");
-
 	fwrite(&image->header, 1, sizeof(image->header), fp);
 	int offset_endLine = (4 - (image->header.width * 3) % 4) % 4;
-
 	uint8_t null[3] = {0,0,0};
 	for (int y = image->header.heigth - 1; y >= 0; y--){
 		for (int x = 0; x < image->header.width; x++){
