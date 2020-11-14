@@ -5,7 +5,7 @@
 #include "characters_detection.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "../upload_and_black_white_image/Bitmap/bitmap.h"
+#include "../other/Bitmap/bitmap.h"
 
 int IsLineWhite(BMPIMAGE *image, uint32_t y)
 {

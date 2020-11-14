@@ -1,4 +1,4 @@
-#include "../../upload_and_black_white_image/Bitmap/bitmap.h"
+#include "../../other/Bitmap/bitmap.h"
 #ifndef ROTATE_H
 #define ROTATE_H
 
