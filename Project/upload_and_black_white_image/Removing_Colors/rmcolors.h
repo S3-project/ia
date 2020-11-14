@@ -7,4 +7,6 @@
 
 BMPIMAGE *ToBlackWhite(BMPIMAGE *image);
 
+BMPIMAGE *Denoising(BMPIMAGE *image);
+
 #endif
