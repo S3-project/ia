@@ -169,9 +169,32 @@ double **mul(double **m1, double **m2, size_t y1, size_t x1_y2, size_t x2){
 	return mat;
 }
 
+//mutiply every elt in a matrice by n
+double **mul_x(double **m,double n, size_t x, size_t y){	
+	double **mat = malloc(sizeof(*mat) * y);
+	for(size_t i = 0; i < y; i++){
+		mat[i] = malloc(sizeof(mat) * x);
+		for(size_t j = 0; j < x; j++){
+			mat[i][j] = n * m[i][j];
+		}
+	}
+	return mat;
+}
+
+//transpose a matrix
+double **transpose(double **m, size_t x, size_t y){
+	double **mat = malloc(sizeof(*mat) * x);
+	for(size_t i = 0; i < x; i++){
+		mat[i] = malloc(sizeof(mat) * y);
+		for(size_t j = 0; j < y; j++){
+			mat[i][j] = m[j][i];
+		}
+	}
+	return mat;	
+}
+
 int main(){
-	//input and output of XOR
-	//print_weights(input, 2, 4);
+	//		*input and output of XOR*
 	/*double input[][2] = 
 	{
 		{0, 0},	
@@ -211,16 +234,19 @@ int main(){
 	}
 	//print_weights(output, 1, 4);
 	
-	//number of units
+
+	//		*number of units*
 	size_t num_input_unit = 2;
 	size_t num_output_unit = 1;
 	size_t num_hidden_unit = 2;
 
-	//other parameters
-	double learning_rate= 0.01;
+
+	//		*other parameters*
+	//double learning_rate= 0.01;
 	int nb_iter = 10000;
 	
-	//init random weights and bias
+
+	//		*init random weights and bias*
 	doseed();
 
 	double **hidden_weights = init_weights(num_input_unit , num_hidden_unit);
@@ -231,7 +257,8 @@ int main(){
 
 	double **output_bias = init_weights(1, num_output_unit);
 
-	//print initial weights and bias
+
+	//		*print initial weights and bias*
 	printf("init hidden weights\n");
 	print_weights(hidden_weights, num_input_unit, num_hidden_unit);
 
@@ -244,9 +271,10 @@ int main(){
 	printf("init output bias\n");
 	print_weights(output_bias, 1, num_output_unit);
 
-	//training algorithm
+
+	//		*training algorithm*
 	for(int i = 0; i < nb_iter; i++){
-		//forward propagation
+		//		*forward propagation*
 		//hidden_layer_activation = input * hidden_weights
 		double **hidden_layer_activation = mul(input, hidden_weights, input_rows, input_columns, num_input_unit);
 
@@ -254,7 +282,7 @@ int main(){
 		hidden_layer_activation = add(hidden_layer_activation, hidden_bias, 1, num_hidden_unit); 
 
 		//hidden_layer_output = sigmoid(elt) of every elt in hidden_layer_activation
-		hidden_layer_activation = sig_m(hidden_layer_activation, 1, num_hidden_unit);
+		double **hidden_layer_output = sig_m(hidden_layer_activation, 1, num_hidden_unit);
 
 		
 		//output_layer_activation = hidden_layer_activation * output_weights
@@ -264,17 +292,31 @@ int main(){
 		output_layer_activation = add(output_layer_activation, output_bias, 1, num_output_unit); 
 
 		//output_layer_output = sigmoid(elt) of every elt in output_layer_activation
-		output_layer_activation = sig_m(output_layer_activation, 1, num_output_unit);
+		double **predicted_output = sig_m(output_layer_activation, 1, num_output_unit);
 
 
-		//backward propagation
-		
+		//		*backward propagation*
+		//error output layer
+		//basic error e = a - b
+		double **error = sub(output, predicted_output, 1, num_output_unit);
+		double err = error[0][0];
 
-		//updating weights
+		//error using derivate of sigmoid
+		predicted_output = sig_d_m(predicted_output, 1, num_output_unit);
+		predicted_output = mul_x(predicted_output, err, 1, num_output_unit);
+
+		//error hidden layer
+		//double **trans_output_weights = ;
+		//double **error_hl = 
+
+		//		*updating weights*
 	
 		//free the memory	
 		free_weights(hidden_layer_activation, num_hidden_unit);
 		free_weights(output_layer_activation, num_output_unit);
+		free_weights(hidden_layer_output, num_output_unit);
+		free_weights(predicted_output, num_output_unit);
+		free_weights(error, num_output_unit);
 	}
 
 	//free the memory
