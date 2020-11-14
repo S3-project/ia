@@ -1,4 +1,5 @@
-#include "Bitmap/bitmap.h"
+#include "../upload_and_black_white_image/Bitmap/bitmap.h"
+
 #include "Removing_Colors/rmcolors.h"
 #include "Rotate/rotate.h"
 #include <stdio.h>

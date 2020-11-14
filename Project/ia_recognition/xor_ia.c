@@ -193,7 +193,7 @@ double **transpose(double **m, size_t x, size_t y){
 	return mat;	
 }
 
-int main(){
+int xor(){
 	//		*input and output of XOR*
 	/*double input[][2] = 
 	{
@@ -243,6 +243,7 @@ int main(){
 
 	//		*other parameters*
 	//double learning_rate= 0.01;
+	//upload_and_black_white_image parameters
 	int nb_iter = 10000;
 	
 

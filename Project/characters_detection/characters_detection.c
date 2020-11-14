@@ -172,12 +172,12 @@ BMPIMAGE ** GetChars(BMPIMAGE **lines, size_t *sizeLines, size_t *sizeChar)
 
 BMPIMAGE ** DetectChars(BMPIMAGE *image, int print)
 {
+
     size_t mallocSizeLines = 0;
     size_t mallocSizeChars = 0;
 
     BMPIMAGE **lines = GetLines(image, &mallocSizeLines);
     BMPIMAGE **chars = GetChars(lines, &mallocSizeLines, &mallocSizeChars);
-
     if(print == 1)
         SaveChar(chars, &mallocSizeChars);
 
