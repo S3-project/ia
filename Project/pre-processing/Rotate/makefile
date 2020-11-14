@@ -1,7 +1,7 @@
 CC=gcc
 ARGS=-Wall -Wextra -std=c99
 
-SRC=$(shell find -mindepth 1 -name '*.c' -not -name "main.c")
+SRC=$(shell find -mindepth 2 -name '*.c' -not -name "main.c")
 SRC += $(shell find -maxdepth 1 -name '*.c')
 OBJ=$(shell find -name '*.o')
 DIRS=$(shell find * -type d)
@@ -9,14 +9,15 @@ DIRS=$(shell find * -type d)
 DIRNAME=$(lastword $(subst /, ,${CURDIR}))
 
 all:
-	for i in $(DIRS); do(cp makefile $$i);done
 	$(MAKE) main
-	$(MAKE) clean
 
 main:
-	$(CC) $(ARGS) -o ./$(DIRNAME).exe $(ADD) $(OBJ) $(SRC) 
+	$(CC) $(ARGS) -o ./$(DIRNAME).exe $(ADD) $(OBJ) $(SRC)
 
+copy:
+	for i in $(DIRS); do(cp makefile $$i);done
+	
 clean:
 	for i in $(OBJ);do(rm $$i);done
 
-.SILENT:all main clean
+.SILENT:all main clean copy

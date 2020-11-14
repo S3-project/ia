@@ -216,7 +216,7 @@ int main(){
 	size_t num_output_unit = 1;
 	size_t num_hidden_unit = 2;
 
-	//other parameters
+	//upload_and_black_white_image parameters
 	double learning_rate= 0.01;
 	int nb_iter = 10000;
 	

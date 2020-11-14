@@ -1,7 +1,7 @@
 CC=gcc
 ARGS=-Wall -Wextra -std=c99
 
-SRC=$(shell find -mindepth 1 -name '*.c' -not -name "main.c")
+SRC=$(shell find -mindepth 2 -name '*.c' -not -name "main.c")
 SRC += $(shell find -maxdepth 1 -name '*.c')
 OBJ=$(shell find -name '*.o')
 DIRS=$(shell find * -type d)
