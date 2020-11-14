@@ -1,5 +1,6 @@
 CC=gcc
-ARGS=-Wall -Wextra -std=c99
+ARGS=  -Wall -Wextra -std=c99
+MATH= -lm
 
 SRC=$(shell find -mindepth 2 -name '*.c' -not -name "main.c")
 SRC += $(shell find -maxdepth 1 -name '*.c')
@@ -12,7 +13,7 @@ all:
 	$(MAKE) main
 
 main:
-	$(CC) $(ARGS) -o ./$(DIRNAME).exe $(ADD) $(OBJ) $(SRC)
+	$(CC) $(ARGS) -o ./$(DIRNAME).exe $(ADD) $(OBJ) $(SRC) $(MATH)
 
 copy:
 	for i in $(DIRS); do(cp makefile $$i);done
