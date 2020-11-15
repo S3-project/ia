@@ -1,8 +1,6 @@
-
 #include <stdio.h>
 #include <string.h>
 
-#include "main.h"
 #include "other/Bitmap/bitmap.h"
 #include "ia_recognition/xor_ia.h"
 #include "pre-processing/Removing_Colors/rmcolors.h"
@@ -51,7 +49,7 @@ int main(int argc, char ** argv)
 
 	if (argc <= 1)
 	{
-		printf("Erreur Syntaxe.\nSyntaxe: %s {cmd}\n", argv[0]);
+		printf("Erreur de syntaxe.\nSyntaxe: %s {cmd}\n", argv[0]);
 		return 0;
 	}
 
@@ -59,7 +57,7 @@ int main(int argc, char ** argv)
 	{
 		if (argc != 4)
 		{
-			printf("Erreur de Syntaxe.\nSyntaxe: %s %s {nb_iter} {learning_rate}\n", argv[0], argv[1]);
+			printf("Erreur de syntaxe.\nSyntaxe: %s %s {nb_iter} {learning_rate}\n", argv[0], argv[1]);
 			return 0;
 		}
 		int nb_iter;
@@ -77,9 +75,9 @@ int main(int argc, char ** argv)
 
 
 
-	printf ("--- Presentation soutenance 1 ---\n\n");
+	printf ("--- Présentation soutenance 1 ---\n\n");
 	
-	printf("Appuyez sur <ENTER> pour commencer.\n");
+	printf("Appuyez sur <ENTREE> pour commencer.\n");
 	getchar();	
 
 
@@ -87,52 +85,52 @@ int main(int argc, char ** argv)
 	printf ("1) Chargement d'une image\n");
 	printf("	Chemin de l'image d'origine: %s\n	...\n", pathimg);
 	BMPIMAGE *img = LoadBitmap(pathimg);
-	printf("	Image chargee dans la mémoire.\n");
+	printf("	Image chargée dans la mémoire.\n");
 	SaveBitmap(img, pathimg_cpy);
-	printf("	Une copie a ete sauvegardé dans : %s\n", pathimg_cpy);
+	printf("	Une copie a été sauvegardée dans : %s\n", pathimg_cpy);
 
 
 	printf ("\n\n");
 
 	printf ("\n2) Rotation de l'image\n");
-	printf("	Appuyez sur <ENTER> pour continuer.");
+	printf("	Appuyez sur <ENTREE> pour continuer.");
 	getchar();
-	printf("	Degre de rotation : -90°\n	...\n");
+	printf("	Degré de rotation : -90°\n	...\n");
 	BMPIMAGE *img_rot =  Rotate(-90, img);
-	printf("	Image a été rotaté de -90°.\n");
+	printf("	Image a été tournée de -90°.\n");
 	SaveBitmap(img_rot, pathimg_rot);
-	printf("	Une copie à été sauvegardé dans : %s\n", pathimg_rot);
+	printf("	Une copie a été sauvegardée dans : %s\n", pathimg_rot);
 
 
 	printf ("\n\n");
 
 
-	printf ("\n3) Deparasitage de l'image\n");
-	printf("	Appuyez sur <ENTER> pour continuer.");
+	printf ("\n3) Déparasitage de l'image\n");
+	printf("	Appuyez sur <ENTREE> pour continuer.");
 	getchar();
-	printf("	Deparasitage de l'image rotatée\n	...\n");
+	printf("	Déparasitage de l'image tournée\n	...\n");
 	BMPIMAGE *img_denoise = Denoising(img_rot);
 	SaveBitmap(img_denoise, pathimg_denoise);
-	printf("	Une copie à été sauvegardé dans : %s\n", pathimg_denoise);
-	printf("	Appuyez sur <ENTER> pour continuer.");
+	printf("	Une copie a été sauvegardée dans : %s\n", pathimg_denoise);
+	printf("	Appuyez sur <ENTREE> pour continuer.");
 
 
 	printf ("\n\n\n");
 
 
 	printf ("\n4) Binarisation de l'image\n");
-	printf("	Appuyez sur <ENTER> pour continuer.");
+	printf("	Appuyez sur <ENTREE> pour continuer.");
 	getchar();
 	printf("	Convertion de l'image en niveau de gris.\n	...\n");
 	BMPIMAGE *img_gray = ToGrayBitmap(img_denoise);
 	SaveBitmap(img_gray, pathimg_gray);
-	printf("	Une copie à été sauvegardé dans : %s\n", pathimg_gray);
-	printf("	Appuyez sur <ENTER> pour continuer.");
+	printf("	Une copie a été sauvegardée dans : %s\n", pathimg_gray);
+	printf("	Appuyez sur <ENTREE> pour continuer.");
 	getchar();
 	printf("	Binarisation de l'image a partir de celle en niveau de gris.\n	...\n");
 	BMPIMAGE *img_bin = ToBlackWhite(img_gray);
 	SaveBitmap(img_bin, pathimg_bin);
-	printf("	Une copie a été sauvegardé dans : %s\n", pathimg_bin);
+	printf("	Une copie a été sauvegardée dans : %s\n", pathimg_bin);
 
 
 
@@ -140,15 +138,15 @@ int main(int argc, char ** argv)
 
 
 
-	/* Segmentation en ligne */
-	printf ("\n5) Segmentation de l'image en ligne\n");
-	printf("	Appuyez sur <ENTER> pour continuer.");
+	/* Segmentation en lignes */
+	printf ("\n5) Segmentation de l'image en lignes\n");
+	printf("	Appuyez sur <ENTREE> pour continuer.");
 	getchar();
 	size_t nb_chars = 0;
-	printf("	Séparation des lines.\n	...\n");
+	printf("	Séparation des lignes.\n	...\n");
 	BMPIMAGE **img_chars = DetectChars(img_bin, 1, &nb_chars);
-	printf("	Des copies ont été sauvegardé dans le dossier: Images/Lines/\n");
-	printf("	Appuyez sur <ENTER> pour continuer.");
+	printf("	Des copies ont été sauvegardées dans le dossier: Images/Lines/\n");
+	printf("	Appuyez sur <ENTREE> pour continuer.");
 	getchar();
 	printf("	Séparation des caractères.\n	...\n");
 
@@ -161,7 +159,7 @@ int main(int argc, char ** argv)
 		SaveBitmap(img_chars[i], str);
 	}
 
-	
+	printf("	Des copies ont été sauvegardées dans le dossier: Images/Characters/\n");
 
 	for (size_t i = 0; i < nb_chars; i++)
 	{
