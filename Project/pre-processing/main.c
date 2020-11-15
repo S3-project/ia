@@ -6,40 +6,32 @@
 
 
 int	main(){
-	char *po = "../../Ressources/images/receipt.bmp";
+	char *po = "../../Ressources/images/Hello_World_PowerPoint.bmp";
 	char *out = "../../Ressources/images/BandW.bmp";
-	char *out2 = "../../Ressources/images/New_receipt.bmp";
-	
+	char *out2 = "../../Ressources/images/Hello_World_Denoised.bmp";
+	char *out3 = "../../Ressources/images/Rotated_Hello_World.bmp";
 	
 	BMPIMAGE *image = LoadBitmap(po);
 	
 	
-	BMPIMAGE *rotateimage = Rotate(-180,image);
+	BMPIMAGE *rotateimage = Rotate(90,image);
 
-	//BMPIMAGE *image_g = ToGrayBitmap(image);
 	
-	//BMPIMAGE *image_denoised = Denoising(image);
-	
-	//BMPIMAGE *image_g = ToGrayBitmap(image_denoised);
+	BMPIMAGE *image_denoised = Denoising(image);
+	BMPIMAGE *image_g = ToGrayBitmap(image_denoised);
 
-	//BMPIMAGE *image_BandW = ToBlackWhite(image_g);
+	BMPIMAGE *image_BandW = ToBlackWhite(image_g);
 	
-	
-	
-	//BMPIMAGE *image_BandW = ToBlackWhite(image_g);
-
-	//BMPIMAGE *image_sub = SubBitmap(image_g, 0, 0, image_g->header.width, 500);
 
 
-	//SaveBitmap(image_g, out);
-	//SaveBitmap(image_BandW, out);
-	SaveBitmap(rotateimage, out2);
+	SaveBitmap(image_g, out);
+	SaveBitmap(image_BandW, out);
+	SaveBitmap(image_denoised, out2);
+	SaveBitmap(rotateimage, out3);
 
 	FreeBitmap(image);
-	//FreeBitmap(image_sub);
-	//FreeBitmap(image_g);
-	//FreeBitmap(image_BandW);
-	//FreeBitmap(image_denoised);
+	FreeBitmap(image_BandW);
+	FreeBitmap(image_denoised);
 	FreeBitmap(rotateimage);
 	return 0;
 }
