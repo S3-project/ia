@@ -4,6 +4,7 @@
 
 #include "main.h"
 #include "other/Bitmap/bitmap.h"
+#include "ia_recognition/xor_ia.h"
 #include "pre-processing/Removing_Colors/rmcolors.h"
 #include "pre-processing/Rotate/rotate.h"
 #include "characters_detection/characters_detection.h"
@@ -44,8 +45,38 @@ char pathimg_denoise[] = "Images/origin_denoise.bmp";
 char pathimg_gray[] = "Images/origin_gray.bmp";
 char pathimg_bin[] = "Images/origin_bin.bmp";
 
-int main()
+int main(int argc, char ** argv)
 {
+
+
+	if (argc <= 1)
+	{
+		printf("Erreur Syntaxe.\nSyntaxe: %s {cmd}\n", argv[0]);
+		return 0;
+	}
+
+	if (isEqual(argv[1], "XOR") || isEqual(argv[1], "xor"))
+	{
+		if (argc != 4)
+		{
+			printf("Erreur de Syntaxe.\nSyntaxe: %s %s {nb_iter} {learning_rate}\n", argv[0], argv[1]);
+			return 0;
+		}
+		int nb_iter;
+		double learning_rate;
+		sscanf(argv[2], "%d", &nb_iter);
+		sscanf(argv[3], "%lf", &learning_rate);
+		xor(nb_iter, learning_rate);
+		return 1;
+	}else if (!isEqual(argv[1], "bitmaps"))
+	{
+		printf("La commande %s n'existe pas.\n", argv[1]);
+		return 0;
+	}
+
+
+
+
 	printf ("--- Presentation soutenance 1 ---\n\n");
 	
 	printf("Appuyez sur <ENTER> pour commencer.\n");

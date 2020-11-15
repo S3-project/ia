@@ -283,6 +283,7 @@ int xor(int nb_iter, double learning_rate){
 		return 0;
 	}
 
+
 	//		*input and output of XOR*
 	size_t input_rows = 4;
 	size_t input_columns = 2;
