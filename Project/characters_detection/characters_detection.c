@@ -170,16 +170,15 @@ BMPIMAGE ** GetChars(BMPIMAGE **lines, size_t *sizeLines, size_t *sizeChar)
 }
 
 
-BMPIMAGE ** DetectChars(BMPIMAGE *image, int print)
+BMPIMAGE ** DetectChars(BMPIMAGE *image, int print, size_t *number_chars)
 {
 
     size_t mallocSizeLines = 0;
-    size_t mallocSizeChars = 0;
 
     BMPIMAGE **lines = GetLines(image, &mallocSizeLines);
-    BMPIMAGE **chars = GetChars(lines, &mallocSizeLines, &mallocSizeChars);
+    BMPIMAGE **chars = GetChars(lines, &mallocSizeLines, number_chars);
     if(print == 1)
-        SaveChar(chars, &mallocSizeChars);
+        SaveChar(lines, &mallocSizeLines);
 
     for(size_t i = 0; i < mallocSizeLines; i++)
         FreeBitmap(lines[i]);

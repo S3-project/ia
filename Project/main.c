@@ -1,12 +1,10 @@
-//
-// Created by Thimot on 03/11/2020.
-//
 
 #include <stdio.h>
 
 #include "main.h"
 #include "other/Bitmap/bitmap.h"
 #include "pre-processing/Removing_Colors/rmcolors.h"
+#include "pre-processing/Rotate/rotate.h"
 #include "characters_detection/characters_detection.h"
 
 void delay(int a)
@@ -110,6 +108,9 @@ int	isEqual(char* s1, char *s2)
 
 char pathimg[] = "Images/origin.bmp";
 char pathimg_cpy[] = "Images/origin_copy.bmp";
+char pathimg_rot[] = "Images/origin_rot.bmp";
+char pathimg_gray[] = "Images/origin_gray.bmp";
+char pathimg_bin[] = "Images/origin_bin.bmp";
 
 int main()
 {
@@ -121,7 +122,7 @@ int main()
 
 	/*Loading image*/	
 	printf ("1) Chargement d'une image\n");
-	printf("	Chemin de l'image d'origine: %s\n", pathimg);
+	printf("	Chemin de l'image d'origine: %s\n	...\n", pathimg);
 	BMPIMAGE *img = LoadBitmap(pathimg);
 	printf("	Image chargee dans la mémoire.\n");
 	SaveBitmap(img, pathimg_cpy);
@@ -129,11 +130,43 @@ int main()
 
 
 
-	printf ("2) Rotation de l'image\n");
-	printf("Appuyez sur <ENTER> pour continuer.\n");
+	printf ("\n2) Rotation de l'image\n");
+	printf("	Appuyez sur <ENTER> pour continuer.");
 	getchar();
+	printf("	Degre de rotation : 90°\n	...\n");
+	BMPIMAGE *img_rot =  Rotate(90, img);
+	printf("	Image a été rotaté de 90°.\n");
+	SaveBitmap(img_rot, pathimg_rot);
+	printf("	Une copie à été sauvegardé dans : %s\n", pathimg_rot);
 
 
+	printf ("\n4) Binarisation de l'image\n");
+	printf("	Appuyez sur <ENTER> pour continuer.");
+	getchar();
+	printf("	Convertion de l'image en niveau de gris.\n	...\n");
+	BMPIMAGE *img_gray = ToGrayBitmap(img_rot);
+	SaveBitmap(img_gray, pathimg_gray);
+	printf("	Une copie à été sauvegardé dans : %s\n", pathimg_gray);
+	printf("	Appuyez sur <ENTER> pour continuer.");
+	getchar();
+	printf("	Binarisation de l'image a partir de celle en niveau de gris.\n	...\n");
+	BMPIMAGE *img_bin = ToBlackWhite(img_gray);
+	SaveBitmap(img_bin, pathimg_bin);
+	printf("	Une copie à été sauvegardé dans : %s\n", pathimg_bin);
+
+	/* Segmentation en ligne */
+	printf ("\n5) Segmentation de l'image en ligne\n");
+	printf("	Appuyez sur <ENTER> pour continuer.");
+	getchar();
+	size_t nb_chars = 0;
+	BMPIMAGE **img_chars = DetectChars(img_bin, 1, &nb_chars);
+	printf("zefh %d", (int)nb_chars);
+
+	
+	FreeBitmap(img);
+	FreeBitmap(img_rot);
+	FreeBitmap(img_gray);
+	FreeBitmap(img_bin);
 	return 0;
 }
 
