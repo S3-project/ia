@@ -6,15 +6,23 @@
 double **sum(double **matrix1, size_t x, size_t y)
 {
     double **matrix = malloc(sizeof(*matrix) * x);
-
-    for(size_t i = 0; i < x; i++)
+    for(size_t i = 0; i < x; i++){
+	matrix[i] = malloc(sizeof(double));
         for(size_t j = 1; j < y; j++)
-            matrix[x][0] += matrix1[i][j];
-
+            matrix[i][0] += matrix1[i][j];
+    }
     return matrix;
 }
 
 
+void copy_line(double **matrix, double *lst, size_t y, size_t size_lst)
+{
+	matrix[y] = malloc(sizeof(double) * size_lst);
+	for (size_t x = 0; x < size_lst; x++)
+	{
+		matrix[y][x] = lst[x];
+	}
+}
 
 double * calcul2(double *list1, double *list2, size_t i, size_t j, int operation)
 {
@@ -30,7 +38,8 @@ double * calcul2(double *list1, double *list2, size_t i, size_t j, int operation
         for(size_t k = 0; k < i; k++)
             list[k] = list2[0];
     else
-        list = list1;
+	for (size_t x = 0; x < i; x++)
+        	list[x] = list1[x];
 
 
     if(operation == 0)
@@ -64,6 +73,7 @@ double * calcul2(double *list1, double *list2, size_t i, size_t j, int operation
 
     return list;
 }
+
 double  **calcul(double **matrix1,double  **matrix2,size_t x1, size_t y1, size_t x2, size_t y2, int operation)
 {
     size_t max = y1;
@@ -73,12 +83,15 @@ double  **calcul(double **matrix1,double  **matrix2,size_t x1, size_t y1, size_t
 
     if(y1 < y2)
         for(size_t k = 0; k < y2; k++)
-            matrix[k] = matrix1[0];
+            copy_line(matrix, matrix1[0], k, x1);
     else if (y2 < y1)
         for(size_t k = 0; k < y1; k++)
-            matrix[k] = matrix2[0];
+            copy_line(matrix, matrix2[0], k, x2);
     else
-        matrix = matrix1;
+    {
+    	for (size_t y = 0; y < y1; y++)
+		copy_line(matrix, matrix1[y], y, x1);
+    }
 
     if(y2 < y1)
         for (size_t k = 0; k < max; k++)
@@ -328,35 +341,22 @@ int xor(){
 
 
 	//		*other parameters*
-	double learning_rate= 0.01;
+	double learning_rate= 0.1;
 	//other parameters
-	int nb_iter = 1;
+	int nb_iter = 10000;
 	
 
 	//		*init random weights and bias*
 	doseed();
 
-	double **hidden_weights = init_weights(num_input_unit , num_hidden_unit);
+	double **hidden_weights = init_weights(num_hidden_unit , num_input_unit);
 
-	double **hidden_bias = init_weights(1, num_hidden_unit);
+	double **hidden_bias = init_weights(num_hidden_unit, 1);
 
-	double **output_weights = init_weights(num_hidden_unit , num_output_unit);
+	double **output_weights = init_weights(num_output_unit, num_hidden_unit);
 
-	double **output_bias = init_weights(1, num_output_unit);
+	double **output_bias = init_weights(num_output_unit, 1);
 
-
-	//		*print initial weights and bias*
-	printf("init hidden weights\n");
-	print_weights(hidden_weights, num_input_unit, num_hidden_unit);
-
-	printf("init hidden bias\n");
-	print_weights(hidden_bias, 1, num_hidden_unit);
-	
-	printf("init output wieghts\n");
-	print_weights(output_weights, num_hidden_unit, num_output_unit);
-
-	printf("init output bias\n");
-	print_weights(output_bias, 1, num_output_unit);
 
 
 	//		*training algorithm*
@@ -364,7 +364,7 @@ int xor(){
 		//		*forward propagation*
 		//hidden_layer_activation = input * hidden_weights
         //double **hidden_layer_activation = mul(input, hidden_weights, input_rows, input_columns, num_input_unit);
-		double **hidden_layer_activation = mul(input, hidden_weights, input_rows, input_columns, num_input_unit);
+	double **hidden_layer_activation = mul(input, hidden_weights, input_rows, input_columns, num_input_unit);
         //(num_hidden_unit,input_rows)
 		//hidden_layer_activation += hidden_bias
         double ** hidden_layer_activation2 = calcul(hidden_layer_activation, hidden_bias, num_hidden_unit,
@@ -375,13 +375,19 @@ int xor(){
         //(num_hidden_unit, input_rows)
 		
 		//output_layer_activation = hidden_layer_activation * output_weights
-		double **output_layer_activation = mul(hidden_layer_output, output_weights, input_rows, num_hidden_unit,
+	double **output_layer_activation = mul(hidden_layer_output, output_weights, input_rows, num_hidden_unit,
                                          num_output_unit);
         //(num_output_unit,input_rows)
 		//output_layer_activation += output_bias
         double ** output_layer_activation2 = calcul(output_layer_activation, output_bias, num_output_unit, input_rows,
                                                     num_output_unit,1, 0);
         //(num_output_unit, input_rows)
+
+	/*printf("init hidden bias\n\n");
+	print_weights(output_layer_activation, num_output_unit, input_rows);
+	printf("init hidden bias\n\n");
+	print_weights(output_layer_activation2, num_output_unit, input_rows);*/
+
         //output_layer_output = sigmoid(elt) of every elt in output_layer_activation
 		double **predicted_output = sig_m(output_layer_activation2, num_output_unit, input_rows);
         //(num_output_unit, input_rows)
@@ -439,18 +445,21 @@ int xor(){
         double ** hidden_bias3 = calcul(hidden_bias, mul_x(hidden_bias2, learning_rate, 2, 1), num_hidden_unit,1, 2,1,0 );
         free_weights(hidden_bias, 1);
         hidden_bias = hidden_bias3;
-
-		//error hidden layer
-		//double **trans_output_weights = ;
-		//double **error_hl = 
-
 		//		*updating weights*
 	
+	if (i == nb_iter - 1)
+	{
+		printf("\nPredicted output\n");
+		print_weights(predicted_output, num_output_unit, output_rows);
+	}
+
+
+
 		//free the memory	
 		free_weights(hidden_layer_activation, input_rows);
-        free_weights(hidden_layer_activation2, input_rows);
+        	free_weights(hidden_layer_activation2, input_rows);
 		free_weights(output_layer_activation, input_rows);
-        free_weights(output_layer_activation2, input_rows);
+        	free_weights(output_layer_activation2, input_rows);
 		free_weights(hidden_layer_output, input_rows);
 		free_weights(predicted_output, input_rows);
 		free_weights(error, output_rows);
@@ -458,20 +467,31 @@ int xor(){
 		free_weights(d_predicted_output,output_rows);
 		free_weights(output_weights_T,num_output_unit);
 		free_weights(error_hidden_layer, output_rows);
+		free_weights(hidden_layer_output_sig, output_rows);
 		free_weights(d_hidden_layer, output_rows);
 		free_weights(hidden_layer_output_T, num_hidden_unit);
 		free_weights(hidden_layer_output_T2, num_hidden_unit);
-		free_weights(output_weights2, num_hidden_unit);
 		free_weights(outputbias2, 1);
-		free_weights(outputbias3, 1);
 		free_weights(hidden_weights_T, num_hidden_unit);
 		free_weights(hidden_weights2, num_hidden_unit);
-		free_weights(hidden_weights3, num_hidden_unit);
 		free_weights(hidden_bias2, 1);
-		free_weights(hidden_bias3, 1);
-
 	}
 
+
+
+	printf("\nFinal hidden weights: \n");
+	print_weights(hidden_weights, num_hidden_unit, num_input_unit);
+	printf("\nFinal hidden bias\n");
+	print_weights(hidden_bias, num_hidden_unit, 1);
+	printf("\nFinal output weights: \n");
+	print_weights(output_weights, num_output_unit, num_hidden_unit);
+	printf("\nFinal output bias\n");
+	print_weights(output_bias, num_output_unit, 1);
+
+
+/*	printf("\nPredicted output\n");
+	print_weights(predicted_output, num_output_unit, 1);
+*/
 	//free the memory
 	free_weights(hidden_weights, num_input_unit);
 	free_weights(output_weights, num_hidden_unit);
