@@ -59,12 +59,12 @@ void SaveChar(BMPIMAGE **chars, size_t *size)
 {
     uint64_t num = 0;
     char number[10 + 5];
-    char str[100] = "./Images/";
+    char str[100] = "./Images/Lines/";
     strcat(str, IntToNameFile(num, number));
 
     for(size_t i = 0; i < *size; i++, num++)
     {
-        char str[100] = "./Images/";
+    	char str[100] = "./Images/Lines/";
         strcat(str, IntToNameFile(num, number));
         SaveBitmap(chars[i], str);
     }
@@ -117,7 +117,6 @@ BMPIMAGE ** GetLines (BMPIMAGE *image, size_t *size)
         imgLines[j / 2] = SubBitmap(image,0,lines[j], image->header.width, lines[j+1] - lines[j] + 1);
 
 
-    FreeBitmap(image);
     return imgLines;
 }
 

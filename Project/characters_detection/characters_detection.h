@@ -9,5 +9,6 @@
 #define chars_detection_h
 
 BMPIMAGE ** DetectChars(BMPIMAGE *image, int print, size_t *number_chars);
+char*  IntToNameFile(int64_t x, char *name);
 
 #endif
