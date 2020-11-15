@@ -5,6 +5,7 @@
 #include "characters_detection.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "../other/Bitmap/bitmap.h"
 
 int IsLineWhite(BMPIMAGE *image, uint32_t y)
@@ -58,9 +59,16 @@ void SaveChar(BMPIMAGE **chars, size_t *size)
 {
     uint64_t num = 0;
     char number[10 + 5];
+    char str[100] = "./Images/";
+    strcat(str, IntToNameFile(num, number));
 
     for(size_t i = 0; i < *size; i++, num++)
-        SaveBitmap(chars[i], IntToNameFile(num, number));
+    {
+        char str[100] = "./Images/";
+        strcat(str, IntToNameFile(num, number));
+        SaveBitmap(chars[i], str);
+    }
+
 }
 
 
@@ -78,7 +86,7 @@ BMPIMAGE ** GetLines (BMPIMAGE *image, size_t *size)
         numberOfLines++;
     }
 
-    for(size_t y = 1; y < image->header.heigth; y++)
+    for(size_t y = 1; y < image->header.heigth - 1; y++)
     {
         if(above == 1 && IsLineWhite(image, y) == 0)
         {
@@ -94,6 +102,8 @@ BMPIMAGE ** GetLines (BMPIMAGE *image, size_t *size)
         }
     }
 
+
+
     if(above == 0)
     {
         lines[numberOfLines] = (image->header.heigth) - 1;
@@ -103,12 +113,11 @@ BMPIMAGE ** GetLines (BMPIMAGE *image, size_t *size)
     *size = numberOfLines / 2;
     BMPIMAGE **imgLines = malloc(sizeof(*imgLines) * *size);
 
-
     for(uint32_t j = 0; j < numberOfLines; j += 2)
-        imgLines[j / 2] = SubBitmap(image,0,lines[j], image->header.width, lines[j+1] - lines[j]);
+        imgLines[j / 2] = SubBitmap(image,0,lines[j], image->header.width, lines[j+1] - lines[j] + 1);
+
 
     FreeBitmap(image);
-
     return imgLines;
 }
 
@@ -157,7 +166,7 @@ BMPIMAGE ** GetChars(BMPIMAGE **lines, size_t *sizeLines, size_t *sizeChar)
         }
 
         for(size_t j = 0; j < numberOfChar; j += 2)
-            temporaire[*sizeChar + j / 2] = SubBitmap(line,row[j],0, row[j + 1] - row[j], line->header.heigth);
+            temporaire[*sizeChar + j / 2] = SubBitmap(line,row[j],0, row[j + 1] - row[j] + 1, line->header.heigth);
 
         *sizeChar += numberOfChar / 2;
     }
