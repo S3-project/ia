@@ -8,94 +8,32 @@
 #include "pre-processing/Rotate/rotate.h"
 #include "characters_detection/characters_detection.h"
 
-void delay(int a)
+
+
+int	isEqual(char* s1, char *s2)
 {
-	int b = 0;
-	for (int i = 0; i < a*10000000; i++)
-		b++;
-}
-
-
-
-void test1()
-{
-	printf("wesh la street du 92! damsdams bangbang");
-}
-
-
-void TestLoadImage(int argc, char **argv)
-{
-	if (argc != 3)
+	int i = 0;
+	int res = 1;
+	while (s1[i])
 	{
-		printf("Error Syntax\nSyntax: %s %s {imagePath}\n", argv[0], argv[1]);
-		return;
-	} 
+		char c  = s1[i];
+		if (s2[i])
+		{
+			if (c != s2[i])
+				res = 0;
 
-
-	BMPIMAGE *img;
-	printf("---- Test load image ----\n");
-	printf("image path: '%s'\nLoading image...", argv[2]);
-	img = LoadBitmap(argv[2]);
-	printf("OK\n");
-	printf("Printing image data...\n\n");
-	PrintBitmap(img);
-
-	FreeBitmap(img);
-}
-
-
-
-void TestToBlackWhite(int argc, char **argv)
-{
-	if (argc != 4)
-	{
-		printf("Error Syntax\nSyntax: %s %s {imagePath} {savePath}\n", argv[0], argv[1]);
-		return;
+		}else
+		{
+			res = 0;
+		}
+		i++;
 	}
-
-	BMPIMAGE *img;
-	printf("---- Test save Black and White image ----\n");
-	printf("image path: '%s'\nLoading image...", argv[2]);
-	img = LoadBitmap(argv[2]);
-	printf("OK\n");
-	printf("Converting to black and white..");
-	BMPIMAGE *gray = ToGrayBitmap(img);
-	BMPIMAGE *black = ToBlackWhite(gray);
-	printf("OK\n");
-
-
-	printf("\nSaving the black and white image..\n");
-	SaveBitmap(black, argv[3]);
-	printf("The image have been saved at '%s'.\n", argv[3]);
-
-	FreeBitmap(img);
-	FreeBitmap(gray);
-	FreeBitmap(black);
+	if (s2[i])
+		res = 0;
+	return res;
 }
 
 
-
-
-
-
-
-/*
-
-char*  IntToNameFile(int64_t x, char *name)                    //transform the int to a string and add the extension file
-{
-    char extension[5] = ".bmp\0";
-    sprintf(name, "%ld", x);
-
-    int j,k;
-    for (j = 0; name[j]!='\0'; j++);
-
-    for (k = 0; extension[k]!='\0'; k++, j++)
-        name[j] = extension[k];
-    name[j] = '\0';
-
-    return name;
-}
-*/
 
 
 
