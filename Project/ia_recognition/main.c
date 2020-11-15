@@ -2,6 +2,6 @@
 
 int main()
 {
-	xor();
+	xor(80000, 0.1);
 	return 1;
 }

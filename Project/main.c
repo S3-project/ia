@@ -105,22 +105,47 @@ int	isEqual(char* s1, char *s2)
 	return res;
 }
 
-int main(int argc, char **argv)
-{
-	if (argc < 2)
-	{
-		printf("Error Syntax\nSyntax: %s {str}\n", argv[0]);
-		return 1;
-	}
 
-	if (isEqual(argv[1], "loadimage"))
-		TestLoadImage(argc, argv);
-	else if(isEqual(argv[1], "saveblackwhite"))
-		TestToBlackWhite(argc, argv);
-	else
-	{
-		printf("Test not Found: %s\n", argv[1]);
-		return 1;
-	}
+
+
+char pathimg[] = "Images/origin.bmp";
+char pathimg_cpy[] = "Images/origin_copy.bmp";
+
+int main()
+{
+	printf ("--- Presentation soutenance 1 ---\n\n");
+	
+	printf("Appuyez sur <ENTER> pour commencer.\n");
+	getchar();	
+
+
+	/*Loading image*/	
+	printf ("1) Chargement d'une image\n");
+	printf("	Chemin de l'image d'origine: %s\n", pathimg);
+	BMPIMAGE *img = LoadBitmap(pathimg);
+	printf("	Image chargee dans la mémoire.\n");
+	SaveBitmap(img, pathimg_cpy);
+	printf("	Une copie a ete sauvegardé dans : %s\n", pathimg_cpy);
+
+
+
+	printf ("2) Rotation de l'image\n");
+	printf("Appuyez sur <ENTER> pour continuer.\n");
+	getchar();
+
+
 	return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
