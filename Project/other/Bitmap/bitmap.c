@@ -262,3 +262,43 @@ BMPIMAGE *SubBitmap(BMPIMAGE *image, uint32_t x, uint32_t y, uint32_t lx, uint32
 }
 
 
+BMPIMAGE *CreateImage(uint32_t row, uint32_t col)
+{
+    BMPIMAGE *image = malloc(sizeof(*image));
+    if (image == NULL){
+        perror("Allocation error.\n");
+        exit(EXIT_FAILURE);
+    }
+    image->header.width = col;
+    image->header.heigth = row;
+    image->header.bits_per_pixel = 24;
+    image->header.compression = 0;
+    image->header.headerSize = 40;
+    image->header.type = 16973;
+    image->header.num_planes = 1;
+    image->header.imageDataOffset = 54;
+    image->header.bfSize = 14 + 108 + (3*image->header.width +
+                                       (4 - (image->header.width*3) %4)%4) * image->header.heigth;
+
+    image->data = malloc(sizeof(RGB*) * image->header.heigth);
+    if (image->data == NULL){
+        perror("Allocation error.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    RGB pixelBlanc = {255,255,255};
+    for (uint32_t i = 0; i < image->header.heigth; i++)
+    {
+        image->data[i] = malloc(sizeof(RGB) * image->header.width);
+        if (image->data[i] == NULL){
+            perror("Allocation error.\n");
+            exit(EXIT_FAILURE);
+        }
+
+       for(uint32_t k = 0; k < image->header.width; k++)
+           image->data[i][k] = pixelBlanc;
+    }
+
+    return image;
+}
+

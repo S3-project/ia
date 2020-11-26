@@ -177,18 +177,51 @@ BMPIMAGE ** GetChars(BMPIMAGE **lines, size_t *sizeLines, size_t *sizeChar)
     return imgChar;
 }
 
+BMPIMAGE ** ResizeChars(BMPIMAGE **chars, size_t *nbChars)
+{
+    size_t size = 0;
+    size_t row = 0;
+    size_t col = 0;
+    BMPIMAGE **tab = malloc(sizeof(BMPIMAGE) * *nbChars);
+
+    for(size_t i = 0; i < nbChars; i++)
+    {
+        if(chars[i]->header.width > chars[i]->header.heigth)
+            size = chars[i]->header.width;
+        else
+            size = chars[i]->header.heigth;
+
+        tab[i] = CreateImage(size, size);
+        row = 0;
+        col = 0;
+
+        while (row < chars[i]->header.heigth)
+        {
+            while (col < chars[i]->header.width)
+            {
+                tab[i]->data[row][col] = chars[i]->data[row][col];
+                col++;
+            }
+            row++;
+        }
+    }
+
+    re
+}
+
+
 
 BMPIMAGE ** DetectChars(BMPIMAGE *image, int print, size_t *number_chars)
 {
 
-    size_t mallocSizeLines = 0;
+    size_t number_lines = 0;
 
-    BMPIMAGE **lines = GetLines(image, &mallocSizeLines);
-    BMPIMAGE **chars = GetChars(lines, &mallocSizeLines, number_chars);
+    BMPIMAGE **lines = GetLines(image, &number_lines);
+    BMPIMAGE **chars = GetChars(lines, &number_lines, number_chars);
     if(print == 1)
-        SaveChar(lines, &mallocSizeLines);
+        SaveChar(lines, &number_lines);
 
-    for(size_t i = 0; i < mallocSizeLines; i++)
+    for(size_t i = 0; i < number_lines; i++)
         FreeBitmap(lines[i]);
     free(lines);
 
