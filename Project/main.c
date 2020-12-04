@@ -144,7 +144,7 @@ int main(int argc, char ** argv)
 	getchar();
 	size_t nb_chars = 0;
 	printf("	Séparation des lignes.\n	...\n");
-	BMPIMAGE **img_chars = DetectChars(img_bin, 1, &nb_chars);
+	BMPIMAGE **img_chars = DetectChars(img_bin, &nb_chars, 1);
 	printf("	Des copies ont été sauvegardées dans le dossier: Images/Lines/\n");
 	printf("	Appuyez sur <ENTREE> pour continuer.");
 	getchar();
@@ -156,7 +156,7 @@ int main(int argc, char ** argv)
     		char number[10 + 5];
     		char str[100] = "./Images/Characters/";
     		strcat(str, IntToNameFile(i, number));
-		SaveBitmap(img_chars[i], str);
+		    SaveBitmap(img_chars[i], str);
 	}
 
 	printf("	Des copies ont été sauvegardées dans le dossier: Images/Characters/\n");

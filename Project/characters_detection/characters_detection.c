@@ -177,54 +177,62 @@ BMPIMAGE ** GetChars(BMPIMAGE **lines, size_t *sizeLines, size_t *sizeChar)
     return imgChar;
 }
 
-BMPIMAGE ** ResizeChars(BMPIMAGE **chars, size_t *nbChars)
+BMPIMAGE ** ResizeChars(BMPIMAGE **chars, size_t *nbChars, BMPIMAGE **tab)
 {
-    size_t size = 0;
-    size_t row = 0;
-    size_t col = 0;
-    BMPIMAGE **tab = malloc(sizeof(BMPIMAGE) * *nbChars);
+    size_t size = 2;
+    double row;
+    double col;
+    double factorRow;
+    double factorCol;
 
-    for(size_t i = 0; i < nbChars; i++)
+    for(size_t i = 0; i < *nbChars; i++)
     {
-        if(chars[i]->header.width > chars[i]->header.heigth)
-            size = chars[i]->header.width;
-        else
-            size = chars[i]->header.heigth;
+        factorRow = chars[i]->header.heigth / 28;
+        factorCol = chars[i]->header.width / 28;
 
         tab[i] = CreateImage(size, size);
         row = 0;
-        col = 0;
 
-        while (row < chars[i]->header.heigth)
+        for(size_t j = 0; j < chars[i]->header.heigth; j++)
         {
-            while (col < chars[i]->header.width)
+            col = 0;
+            for(size_t k = 0; k < chars[i]->header.width; k++)
             {
-                tab[i]->data[row][col] = chars[i]->data[row][col];
-                col++;
+                //tab[i]->data[j][k] = chars[i]->data[(size_t)row][(size_t)col];
+                //col += factorCol;
             }
-            row++;
+            //row += factorRow;
         }
     }
 
-    re
+    return tab;
 }
 
 
 
-BMPIMAGE ** DetectChars(BMPIMAGE *image, int print, size_t *number_chars)
+BMPIMAGE ** DetectChars(BMPIMAGE *image, size_t *number_chars, int print)
 {
 
     size_t number_lines = 0;
 
     BMPIMAGE **lines = GetLines(image, &number_lines);
     BMPIMAGE **chars = GetChars(lines, &number_lines, number_chars);
+    BMPIMAGE **charsCorrectSize = malloc(sizeof (BMPIMAGE)* *number_chars);
+
+    ResizeChars(chars, number_chars, charsCorrectSize);
+
     if(print == 1)
-        SaveChar(lines, &number_lines);
+        //SaveChar(lines, &number_lines);
+
+    //SaveChar(charsCorrectSize, number_chars);
 
     for(size_t i = 0; i < number_lines; i++)
         FreeBitmap(lines[i]);
     free(lines);
+    for(size_t i = 0; i < *number_chars; i++)
+        FreeBitmap(chars[i]);
+    free(chars);
 
-    return chars;
+    return charsCorrectSize;
 }
 
