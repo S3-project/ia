@@ -312,7 +312,7 @@ int xor(int nb_iter, double learning_rate){
 	//=====================================================================
 	for(int i = 0; i < nb_iter; i++){
 		
-		//dispaly information during processing
+		//display information during processing
 		double percent = (double)(i+1) * 100.0 / (double)nb_iter; 
 		printf("\rStatue : %.2f%c", percent, '%');
 		fflush(stdout);
@@ -339,6 +339,7 @@ int xor(int nb_iter, double learning_rate){
 		//output_layer_output = sigmoid(elt) of every elt in output_layer_activation
 		double **predicted_output = sig_m(output_layer_activation2, num_output_unit, input_rows);
 
+		
 		//=======================*backward propagation*========================
 		//=====================================================================
 		//error output layer
@@ -361,7 +362,6 @@ int xor(int nb_iter, double learning_rate){
 		double ** d_hidden_layer = calcul(error_hidden_layer, hidden_layer_output_sig, num_hidden_unit, output_rows,
 				num_hidden_unit, input_rows, 2);
 
-
 		//=======================*Updating weights and biases*=================
 		//=====================================================================
 		//updating output weights and biases
@@ -376,6 +376,7 @@ int xor(int nb_iter, double learning_rate){
 		output_weights = output_weights2;
 
 		double ** outputbias2 = sum(d_predicted_output, num_output_unit, output_rows);
+		//ATTENTION unsure variables
 		double ** outputbias3 = calcul(output_bias, mul_x(outputbias2, learning_rate, 2, 1), num_output_unit, 1, 2, 1, 0);
 		free_mat(output_bias, 1);
 		output_bias = outputbias3;
@@ -390,7 +391,9 @@ int xor(int nb_iter, double learning_rate){
 		hidden_weights = hidden_weights3;
 
 		double ** hidden_bias2 = sum(d_hidden_layer, num_hidden_unit, output_rows);
+		//ATTENTION unsure variables
 		mul_x(hidden_bias2, 0.1, 2, 1);
+		//ATTENTION unsure variables
 		double ** hidden_bias3 = calcul(hidden_bias, hidden_bias2, num_hidden_unit, 1, 2, 1, 0);
 		free_mat(hidden_bias, 1);
 		hidden_bias = hidden_bias3;
@@ -406,6 +409,7 @@ int xor(int nb_iter, double learning_rate){
 		}
 
 
+		
 		//=======================*free the memory in the for loop*=============	
 		//=====================================================================
 		free_mat(hidden_layer_activation, input_rows);
