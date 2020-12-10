@@ -24,7 +24,7 @@ int main(){
 	NN nn = InitializeNN(28*28,25,26);
 	TDB tdb = getTrainData("../../Ressources/Lettres/emnist-letters-train-images-idx3-ubyte", "../../Ressources/Lettres/emnist-letters-train-labels-idx1-ubyte"); 
 
-	train3_opti(&nn, &tdb, 0.1, 0.85, 100);
+	train3_opti(&nn, &tdb, 0.1, 0.5, 150);
 	
 	SaveNN(&nn, "train3.nn");
 
