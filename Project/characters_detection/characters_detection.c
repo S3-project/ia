@@ -8,6 +8,33 @@
 #include <string.h>
 #include "../other/Bitmap/bitmap.h"
 
+void InversionColor(BMPIMAGE **images, size_t *numberImage)
+{
+    BMPIMAGE *image;
+    for(size_t i = 0; i < *numberImage; i++)
+    {
+        image = images[i];
+        for(size_t j = 0; j < image->header.heigth; j++)
+        {
+            for (size_t k = 0; k < image->header.width; k++)
+            {
+                if(image->data[j][k].R == 0)
+                {
+                    image->data[j][k].R = 255;
+                    image->data[j][k].G = 255;
+                    image->data[j][k].B = 255;
+                }
+                else
+                {
+                    image->data[j][k].R = 0;
+                    image->data[j][k].G = 0;
+                    image->data[j][k].B = 0;
+                }
+            }
+        }
+    }
+}
+
 int IsLineWhite(BMPIMAGE *image, uint32_t y)
 {
     uint32_t x = 0;
@@ -251,6 +278,7 @@ BMPIMAGE ** DetectChars(BMPIMAGE *image, size_t *number_chars, int print)
     BMPIMAGE **charsCorrectSize = malloc(sizeof (BMPIMAGE)* *number_chars);
 
     ResizeChars(chars, number_chars, charsCorrectSize);
+    InversionColor(charsCorrectSize, number_chars);
 
     if(print == 1)
         SaveChar(chars, number_chars);
