@@ -31,6 +31,8 @@ double **RandomMatrix(unsigned int x, unsigned int y);
 void trainNN(NN *nn, double *input_f, double *output_f);
 char predictNN(NN *nn, double *input_f);
 size_t indexOfMax(double *lst, size_t size);
+void SaveNN(NN *nn, char *path);
+NN LoadNN(char *path, double lr);
 void FreeNN(NN *nn);
 void FreeMatrix(double **matrix, unsigned int y);
 
@@ -86,7 +88,7 @@ void trainNN(NN *nn, double *input_f, double *output_f)
 	// make matrix with parameters
 	double	*input[1] = {input_f};
 	double	*output[1] = {output_f};
-	
+
 	// Find The outputs of the hidden neurones
 	double **hidden_layer_activation = dot(input, nn->hidden_weights, 1, nn->number_inputs, nn->number_hiddens);
 	hidden_layer_activation = add(hidden_layer_activation, nn->hidden_biais, nn->number_hiddens, 1); // update hidden_layer_activation
@@ -154,7 +156,7 @@ char predictNN(NN *nn, double *input_f)
 {
 	// make matrix with parameters
 	double	*input[1] = {input_f};
-	
+
 	// Find The outputs of the hidden neurones
 	double **hidden_layer_activation = dot(input, nn->hidden_weights, 1, nn->number_inputs, nn->number_hiddens);
 	hidden_layer_activation = add(hidden_layer_activation, nn->hidden_biais, nn->number_hiddens, 1); // update hidden_layer_activation
@@ -164,9 +166,9 @@ char predictNN(NN *nn, double *input_f)
 	double **output_layer_activation = dot(hidden_layer_output, nn->output_weights, 1, nn->number_hiddens, nn->number_outputs);
 	output_layer_activation = add(output_layer_activation, nn->output_biais, nn->number_outputs, 1); // update output_layer_activation
 	double **predicted_output = sigmoid(output_layer_activation, nn->number_outputs, 1); // update hidden_layer_activation
-	
+
 	FreeMatrix(hidden_layer_output, 1);
-	
+
 	size_t index = indexOfMax(predicted_output[0], nn->number_outputs) + 'A';
 	FreeMatrix(predicted_output, 1);
 	return index;
@@ -196,6 +198,72 @@ size_t indexOfMax(double *lst, size_t size){
 	}
 	return max_index;
 }
+
+
+void SaveNN(NN *nn, char *path){
+	FILE *fp = fopen(path, "wb");
+	if (fp == NULL){
+		printf("Unable to open the file.\n");
+		exit(EXIT_FAILURE);
+	}
+	fwrite(&nn->number_inputs, 1, sizeof(nn->number_inputs), fp);
+	fwrite(&nn->number_hiddens, 1, sizeof(nn->number_hiddens), fp);
+	fwrite(&nn->number_outputs, 1, sizeof(nn->number_outputs), fp);
+	
+	for (uint32_t y = 0; y < nn->number_inputs; y++){
+		for (uint32_t x = 0; x < nn->number_hiddens; x++){
+			fwrite(&nn->hidden_weights[y][x], 1, sizeof(double), fp);
+		}	
+	}
+	for (uint32_t x = 0; x < nn->number_hiddens; x++){
+		fwrite(&nn->hidden_biais[0][x], 1, sizeof(double), fp);
+	}
+	for (uint32_t y = 0; y < nn->number_hiddens; y++){
+		for (uint32_t x = 0; x < nn->number_outputs; x++){
+			fwrite(&nn->output_weights[y][x], 1, sizeof(double), fp);
+		}	
+	}
+	for (uint32_t x = 0; x < nn->number_outputs; x++){
+		fwrite(&nn->output_biais[0][x], 1, sizeof(double), fp);
+	}
+	fclose(fp);
+}
+
+NN LoadNN(char *path, double lr){
+	NN nn = {0,0,0,lr,NULL,NULL,NULL,NULL};
+	FILE *fp = fopen(path, "r");
+	if (fp == NULL){
+		perror("Error while opening the file.\n");
+		exit(EXIT_FAILURE);	
+	}
+	fread(&nn.number_inputs, sizeof(nn.number_inputs), 1, fp);
+	fread(&nn.number_hiddens, sizeof(nn.number_hiddens), 1, fp);
+	fread(&nn.number_outputs, sizeof(nn.number_outputs), 1, fp);
+
+	nn.hidden_weights = malloc(sizeof(nn.hidden_weights) * nn.number_inputs);
+	for (uint32_t y = 0; y < nn.number_inputs; y++){
+		nn.hidden_weights[y] = malloc(sizeof(nn.hidden_weights[y]) * nn.number_hiddens);
+		for (uint32_t x = 0; x < nn.number_hiddens; x++){
+			fread(&nn.hidden_weights[y][x], sizeof(double), 1, fp);
+		}
+	}
+	nn.hidden_biais = malloc(sizeof(nn.hidden_biais) * 1);
+	nn.hidden_biais[0] = malloc(sizeof(nn.hidden_biais[0]) * nn.number_hiddens);
+	fread(nn.hidden_biais[0], 1, sizeof(double) * nn.number_hiddens, fp);
+
+	nn.output_weights = malloc(sizeof(nn.output_weights) * nn.number_hiddens);
+	for (uint32_t y = 0; y < nn.number_hiddens; y++){
+		nn.output_weights[y] = malloc(sizeof(nn.output_weights[y]) * nn.number_outputs);
+		fread(nn.output_weights[y], 1, sizeof(double) * nn.number_outputs, fp);
+	}
+	nn.output_biais = malloc(sizeof(nn.output_biais) * 1);
+	nn.output_biais[0] = malloc(sizeof(nn.output_biais[0]) * nn.number_outputs);
+	fread(nn.output_biais[0], 1, sizeof(double) * nn.number_outputs, fp);
+	
+	fclose(fp);
+	return nn;
+}
+
 
 // Free the memory of a NN
 void FreeNN(NN *nn){

@@ -3,27 +3,33 @@
 #include <stdio.h>
 #include <string.h>
 
-#define PERIOD_REFRESH 5000
+#define PERIOD_REFRESH 10000
 #define NB_IMAGES_GETERROR 10000
-#define PATH_SAVE_GRAPH "train1_lr0.1.csv"
-#define TRAIN_NAME "train1_lr0.1"
+#define PATH_SAVE_GRAPH "train3_lr0.1_q0.85.csv"
+#define TRAIN_NAME "train3_lr0.1_q0.85"
 
 
 
 void train1(NN *nn, TDB *tdb, double lr, int count);
 void train2(NN *nn, TDB *tdb, double lr, double q,  int count);
+void train3(NN *nn, TDB *tdb, double lr, double q,  int count);
+void train3_opti(NN *nn, TDB *tdb, double lr, double q,  int count); // do not save graph
 void SaveAsCSV(char *path, double *data, size_t count);
 void replaceWithComa(char *str, double value);
 
 int main(){
 	rand_set_seed();
 
+
 	NN nn = InitializeNN(28*28,25,26);
-	nn.lr = 0.1;
 	TDB tdb = getTrainData("../../Ressources/Lettres/emnist-letters-train-images-idx3-ubyte", "../../Ressources/Lettres/emnist-letters-train-labels-idx1-ubyte"); 
 
-	train1(&nn, &tdb, 0.1, 1);
+	train3_opti(&nn, &tdb, 0.1, 0.85, 100);
 	
+	SaveNN(&nn, "train3.nn");
+
+
+
 	double error = getErrorNN(&nn, &tdb, 120000);
 	printf("\n%lf\n", error);
 
@@ -107,6 +113,76 @@ void train2(NN *nn, TDB *tdb, double lr, double q, int count)
 	
 }
 
+/*
+ *	lr -> learning rate
+ *	q -> the value that change the lr every loops
+ *	count -> the number of loops that will do the training
+ *
+ * */
+void train3(NN *nn, TDB *tdb, double lr, double q, int count)
+{
+	int nb_saves = count * (tdb->nb_images / PERIOD_REFRESH) + 1;
+	double *data = malloc(sizeof(double) * nb_saves);
+	int index = 0;
+	double error = getErrorNN(nn, tdb, NB_IMAGES_GETERROR);
+	data[index++] = error;
+
+	nn->lr = lr;
+	for (int a  =0; a < count; a++){
+		int i = 0;
+		while (i + PERIOD_REFRESH < tdb->nb_images){
+			for (int b = i; b < i + PERIOD_REFRESH; b++){
+				trainNN(nn, tdb->images[b], tdb->labels[b]);
+			}
+			double percent = (double)(i+1) * 100.0 / (double) tdb->nb_images;
+			printf("\r--> %.2f%c loop=%d\n", percent, '%', a);
+			fflush(stdout);
+			i += PERIOD_REFRESH;
+			double error = getErrorNN(nn, tdb, NB_IMAGES_GETERROR);
+			data[index++] = error;
+		}
+		for (int b = i; b < tdb->nb_images; b++){
+			trainNN(nn, tdb->images[b], tdb->labels[b]);
+		}
+		if(a % 4 == 0){
+			nn->lr *= q;
+		}
+	}
+	SaveAsCSV(PATH_SAVE_GRAPH, data, nb_saves);
+	free(data);
+	
+}
+
+
+/*
+ *	lr -> learning rate
+ *	q -> the value that change the lr every loops
+ *	count -> the number of loops that will do the training
+ *
+ * */
+void train3_opti(NN *nn, TDB *tdb, double lr, double q, int count)
+{
+	nn->lr = lr;
+	for (int a  =0; a < count; a++){
+		int i = 0;
+		while (i + PERIOD_REFRESH < tdb->nb_images){
+			for (int b = i; b < i + PERIOD_REFRESH; b++){
+				trainNN(nn, tdb->images[b], tdb->labels[b]);
+			}
+			double percent = (double)(i+1) * 100.0 / (double) tdb->nb_images;
+			printf("\r--> %.2f%c loop=%d", percent, '%', a);
+			fflush(stdout);
+			i += PERIOD_REFRESH;
+		}
+		for (int b = i; b < tdb->nb_images; b++){
+			trainNN(nn, tdb->images[b], tdb->labels[b]);
+		}
+		if(a % 4 == 0){
+			nn->lr *= q;
+		}
+	}
+	
+}
 
 
 void SaveAsCSV(char *path, double *data, size_t count){
