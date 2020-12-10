@@ -46,9 +46,9 @@ OBJS=main.o
 
 
 
-all: #$(OBJS)
+all: $(OBJS)
 
-	$(LD) $(OBJS) #-o $(TARGET) $(OBJS) $(LDFLAGS)
+	$(LD) -o $(TARGET) $(OBJS) $(LDFLAGS)
 
     
 

@@ -2,7 +2,11 @@
 <!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <object class="GtkFileFilter" id="filefilter1"/>
+  <object class="GtkFileFilter" id="filefilter1">
+    <patterns>
+      <pattern>.bmp</pattern>
+    </patterns>
+  </object>
   <object class="GtkTextBuffer" id="textbuffer1">
     <property name="text" translatable="yes">Your text will appear here !
 But first open an image 
@@ -16,7 +20,7 @@ and press Launch OCR !</property>
     <property name="default_width">480</property>
     <property name="default_height">350</property>
     <property name="icon">logo.png</property>
-    <signal name="destroy" handler="gtk_main_quit" swapped="no"/>
+    <signal name="destroy" handler="gtk_quit" swapped="no"/>
     <child type="titlebar">
       <placeholder/>
     </child>
@@ -42,7 +46,7 @@ and press Launch OCR !</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkFileChooserButton">
+                      <object class="GtkFileChooserButton" id="file_box">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="filter">filefilter1</property>
@@ -55,14 +59,14 @@ and press Launch OCR !</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="filename">
+                      <object class="GtkLabel" id="load_image">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="halign">baseline</property>
                         <property name="valign">baseline</property>
                         <property name="margin_top">7</property>
                         <property name="margin_bottom">5</property>
-                        <property name="label" translatable="yes">No file chosen</property>
+                        <property name="label" translatable="yes"> Load image </property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -93,11 +97,31 @@ and press Launch OCR !</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton">
-                    <property name="label" translatable="yes">Load Neural Network</property>
+                  <object class="GtkGrid">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkLabel" id="load_label">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes"> Load neural network </property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkFileChooserButton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="title" translatable="yes"/>
+                      </object>
+                      <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">0</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -111,6 +135,7 @@ and press Launch OCR !</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <signal name="clicked" handler="saveNN" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -183,7 +208,7 @@ Rotate :
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkEntry">
+                      <object class="GtkEntry" id="rotate">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                       </object>
@@ -237,6 +262,8 @@ Rotate :
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="margin_bottom">160</property>
+                <property name="wrap_mode">char</property>
+                <property name="justification">fill</property>
                 <property name="buffer">textbuffer1</property>
               </object>
               <packing>

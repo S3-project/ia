@@ -1,10 +1,11 @@
-#include <"gtk/gtk.h">
+#include <gtk/gtk.h>
 
-GtkWidget *g_lbl_hello;
-GtkWidget *g_lbl_count;
 
 int main(int argc, char *argv[])
 {
+    GtkWidget *window;
+    //GtkWidget *filename;
+    //GtkWidget *g_lbl_count;
 
     // Initializes GTK.
     gtk_init(NULL, NULL);
@@ -15,7 +16,7 @@ int main(int argc, char *argv[])
     // Loads the UI description.
     // (Exits if an error occurs.)
     GError* error = NULL;
-    if (gtk_builder_add_from_file(builder, "duel.glade", &error) == 0)
+    if (gtk_builder_add_from_file(builder, "glade/main.glade", &error) == 0)
     {
         g_printerr("Error loading file: %s\n", error->message);
         g_clear_error(&error);
@@ -23,21 +24,13 @@ int main(int argc, char *argv[])
     }
     
     
-    
-    GtkBuilder      *builder; 
-    GtkWidget       *window;
 
-    gtk_init(&argc, &argv);
-
-    builder = gtk_builder_new();
-    gtk_builder_add_from_file (builder, "UI.glade", NULL);
-
-    window = GTK_WIDGET(gtk_builder_get_object(builder, "window_1"));
+    window = GTK_WIDGET(gtk_builder_get_object(builder, "main_window"));
     gtk_builder_connect_signals(builder, NULL);
     
     // get pointers to the labels
-    g_lbl_hello = GTK_WIDGET(gtk_builder_get_object(builder, "lbl_hello"));
-    g_lbl_count = GTK_WIDGET(gtk_builder_get_object(builder, "lbl_count"));
+    //filename = GTK_WIDGET(gtk_builder_get_object(builder, "filename"));
+    //g_lbl_count = GTK_WIDGET(gtk_builder_get_object(builder, "lbl_count"));
 
     g_object_unref(builder);
 
@@ -47,14 +40,38 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-// called when button is clicked
-void on_btn_execute_clicked()
+// called when Launch Neural Network button is clicked
+void trainNN()
 {
-	printf("on_btn_clicked()");
+	g_print("trainNN()\n");
+}
+
+//called when Save Neural Network button is clicked
+void saveNN()
+{
+	g_print("saveNN()\n");
+}
+
+//called when Load Image button is clicked
+void load_image()
+{
+	g_print("load_image()\n");
+}
+
+//called when LaunchOCR button is clicked
+void launchOCR()
+{
+	g_print("launchOCR()\n");
+}
+
+//called when Save Text button is clicked
+void save_text()
+{
+	g_print("save_text()\n");
 }
 
 // called when window is closed
-void on_window_1_destroy()
+void gtk_quit()
 {
     gtk_main_quit();
 }
