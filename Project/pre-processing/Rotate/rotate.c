@@ -21,7 +21,7 @@ double **init_matrix(size_t c, size_t r){
 	return mat;
 }
 
-double **mul(double **m1, double **m2, size_t r1, size_t c1_r2, size_t c2){	
+double **mult(double **m1, double **m2, size_t r1, size_t c1_r2, size_t c2){
 	double **mat = malloc(sizeof(*mat) * r1);
 	for(size_t i = 0; i < r1; i++){
 		mat[i] = malloc(sizeof(mat) * c2);
@@ -212,7 +212,7 @@ BMPIMAGE *Rotate(double degree, BMPIMAGE *image)
 				mat_index[1][0]=j;
 				
 				
-				double **mat_mul = mul(mat,mat_index,2,2,1);
+				double **mat_mul = mult(mat,mat_index,2,2,1);
 				int new_i = mat_mul[0][0];
 				int new_j = mat_mul[1][0];
 				
