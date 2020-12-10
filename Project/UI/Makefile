@@ -42,22 +42,21 @@ LDFLAGS=$(PTHREAD) $(GTKLIB) -export-dynamic
 
 
 
-OBJS=    main.o
+OBJS=main.o
 
 
 
 all: #$(OBJS)
 
-    $(LD) -o $(TARGET) #$(OBJS) $(LDFLAGS)
+	$(LD) $(OBJS) #-o $(TARGET) $(OBJS) $(LDFLAGS)
 
     
 
 main.o: src/main.c
 
-    $(CC) -c $(CCFLAGS) src/main.c $(GTKLIB) -o main.o
+	$(CC) -c $(CCFLAGS) src/main.c $(GTKLIB) -o main.o
 
     
 
 clean:
-
-    rm -f *.o $(TARGET)
+	rm -f *.o $(TARGET)
