@@ -5,6 +5,25 @@ GtkWidget *g_lbl_count;
 
 int main(int argc, char *argv[])
 {
+
+    // Initializes GTK.
+    gtk_init(NULL, NULL);
+
+    // Constructs a GtkBuilder instance.
+    GtkBuilder* builder = gtk_builder_new ();
+
+    // Loads the UI description.
+    // (Exits if an error occurs.)
+    GError* error = NULL;
+    if (gtk_builder_add_from_file(builder, "duel.glade", &error) == 0)
+    {
+        g_printerr("Error loading file: %s\n", error->message);
+        g_clear_error(&error);
+        return 1;
+    }
+    
+    
+    
     GtkBuilder      *builder; 
     GtkWidget       *window;
 
