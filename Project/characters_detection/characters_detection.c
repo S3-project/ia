@@ -179,29 +179,60 @@ BMPIMAGE ** GetChars(BMPIMAGE **lines, size_t *sizeLines, size_t *sizeChar)
 
 BMPIMAGE ** ResizeChars(BMPIMAGE **chars, size_t *nbChars, BMPIMAGE **tab)
 {
-    size_t size = 2;
+    size_t size = 28;
+    size_t offset = 0;
     double row;
     double col;
     double factorRow;
     double factorCol;
+    BMPIMAGE *image;
+    BMPIMAGE  *imageResize[*nbChars];
 
     for(size_t i = 0; i < *nbChars; i++)
     {
-        factorRow = chars[i]->header.heigth / 28;
-        factorCol = chars[i]->header.width / 28;
+        image = chars[i];
+        row = image->header.heigth;
+        while((int)row%size != 0)
+            row++;
+        col = image->header.width;
+        while((int)col%size != 0)
+            col++;
 
+        imageResize[i] = CreateImage(row, col);
+
+        int WhiteRowOffset = (row - image->header.heigth) / 2;
+        int WhiteColOffset = (col - image->header.width) / 2;
+
+
+        for(size_t j = 0; j < image->header.heigth; j++)
+        {
+            for(size_t k = 0; k < image->header.width; k++)
+            {
+                imageResize[i]->data[j + WhiteRowOffset][k + WhiteColOffset] = image->data[j][k];
+            }
+        }
+    }
+
+
+    for(size_t i = 0; i < *nbChars; i++)
+    {
+        image = imageResize[i];
         tab[i] = CreateImage(size, size);
-        row = 0;
 
-        for(size_t j = 0; j < chars[i]->header.heigth; j++)
+
+        factorRow = image->header.heigth / (size - offset * 2.0);
+        factorCol = image->header.width / (size  - offset * 2.0);
+
+        row = 0;
+        for(size_t j = offset; j < size - offset; j++)
         {
             col = 0;
-            for(size_t k = 0; k < chars[i]->header.width; k++)
+            for(size_t k = offset; k < size - offset; k++)
             {
-                //tab[i]->data[j][k] = chars[i]->data[(size_t)row][(size_t)col];
-                //col += factorCol;
+                tab[i]->data[j][k] = image->data[(int)row][(int)col];
+                col += factorCol;
             }
-            //row += factorRow;
+            row += factorRow;
         }
     }
 
@@ -222,9 +253,7 @@ BMPIMAGE ** DetectChars(BMPIMAGE *image, size_t *number_chars, int print)
     ResizeChars(chars, number_chars, charsCorrectSize);
 
     if(print == 1)
-        //SaveChar(lines, &number_lines);
-
-    //SaveChar(charsCorrectSize, number_chars);
+        SaveChar(chars, number_chars);
 
     for(size_t i = 0; i < number_lines; i++)
         FreeBitmap(lines[i]);

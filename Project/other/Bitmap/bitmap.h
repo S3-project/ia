@@ -16,7 +16,7 @@ typedef struct  RGB_STCT RGB;
 
 struct BMP_HEADER_STCT
 {
-	uint16_t type; /* The type of the format. need to be 0x424d */
+	uint16_t type; /* The type of the format. need to be 0x4d42 */
 	uint32_t bfSize; /* The size of the file (header include) in bytes */
 	uint16_t unused1; 
 	uint16_t unused2;

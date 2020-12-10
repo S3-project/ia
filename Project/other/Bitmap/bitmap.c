@@ -269,7 +269,7 @@ BMPIMAGE *CreateImage(uint32_t row, uint32_t col)
         perror("Allocation error.\n");
         exit(EXIT_FAILURE);
     }
-    image->header.type = 0x424d;
+    image->header.type = 0x4d42;
     image->header.unused1 = 0;
     image->header.unused2 = 0;
     image->header.imageDataOffset = 54;
@@ -280,8 +280,8 @@ BMPIMAGE *CreateImage(uint32_t row, uint32_t col)
     image->header.bits_per_pixel = 24;
     image->header.compression = 0;
     image->header.unused3 = 0;
-    image->header.unused4 = 0xC40E;
-    image->header.unused5 = 0xC40E;
+    image->header.unused4 = 0;
+    image->header.unused5 = 0;
     image->header.unused6 = 0;
     image->header.unused7 = 0;
 
