@@ -177,7 +177,7 @@ void	PrintBitmap(BMPIMAGE *image)
 void	SaveBitmap(BMPIMAGE *image, char *filename)
 {
 	int offset_endLine = (4 - (image->header.width * 3) % 4) % 4;
-	image->header.bfSize = 14 + 108 + (3*image->header.width + 
+	image->header.bfSize = 14 + 40 + (3*image->header.width * image->header.heigth +
 			offset_endLine * image->header.heigth);
 	FILE *fp = fopen(filename, "wb");
 	fwrite(&image->header, 1, sizeof(image->header), fp);
@@ -239,9 +239,9 @@ BMPIMAGE *SubBitmap(BMPIMAGE *image, uint32_t x, uint32_t y, uint32_t lx, uint32
 	new_image->header = image->header;
 	new_image->header.width = lx;
 	new_image->header.heigth = ly;
-	new_image->header.bfSize = 14 + 108 + (3*new_image->header.width + 
-			(4 - (new_image->header.width*3) %4)%4) * new_image->header.heigth;
-	new_image->data = malloc(sizeof(RGB*) * new_image->header.heigth);
+	new_image->header.bfSize = 14 + 40 + (3*new_image->header.width * new_image->header.heigth +
+                                          (4 - (new_image->header.width*3) %4)%4) * new_image->header.heigth;
+    new_image->data = malloc(sizeof(RGB*) * new_image->header.heigth);
 	if (new_image->data == NULL){
 		perror("Allocation error.\n");
 		exit(EXIT_FAILURE);	
@@ -261,4 +261,53 @@ BMPIMAGE *SubBitmap(BMPIMAGE *image, uint32_t x, uint32_t y, uint32_t lx, uint32
 	return new_image;
 }
 
+
+BMPIMAGE *CreateImage(uint32_t row, uint32_t col)
+{
+    BMPIMAGE *image = malloc(sizeof(*image));
+    if (image == NULL){
+        perror("Allocation error.\n");
+        exit(EXIT_FAILURE);
+    }
+    image->header.type = 0x4d42;
+    image->header.unused1 = 0;
+    image->header.unused2 = 0;
+    image->header.imageDataOffset = 54;
+    image->header.headerSize = 40;
+    image->header.width = col;
+    image->header.heigth = row;
+    image->header.num_planes = 1;
+    image->header.bits_per_pixel = 24;
+    image->header.compression = 0;
+    image->header.unused3 = 0;
+    image->header.unused4 = 0;
+    image->header.unused5 = 0;
+    image->header.unused6 = 0;
+    image->header.unused7 = 0;
+
+
+    image->header.bfSize = 14 + 40 + (3*image->header.width * image->header.heigth +
+                                       (4 - (image->header.width*3) %4)%4) * image->header.heigth;
+
+    image->data = malloc(sizeof(RGB*) * image->header.heigth);
+    if (image->data == NULL){
+        perror("Allocation error.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    RGB pixelBlanc = {255,255,255};
+    for (uint32_t i = 0; i < image->header.heigth; i++)
+    {
+        image->data[i] = malloc(sizeof(RGB) * image->header.width);
+        if (image->data[i] == NULL){
+            perror("Allocation error.\n");
+            exit(EXIT_FAILURE);
+        }
+
+       for(uint32_t k = 0; k < image->header.width; k++)
+           image->data[i][k] = pixelBlanc;
+    }
+
+    return image;
+}
 

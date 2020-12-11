@@ -76,14 +76,18 @@ BMPIMAGE *Denoising(BMPIMAGE *image)
 		perror("Allocation error.\n");
 		exit(EXIT_FAILURE);
 	}
+	
 	uint8_t r;
 	uint8_t g;
 	uint8_t b;
-	float sum=0;
+	float sum_r=0;
+	float sum_g=0;
+	float sum_b=0;
 	float sum_e=0;
 	float average=0;
 	float etype=0;
 	float ecart=0;
+	
 	RGB rgb;
 	int h=new_image->header.heigth;
 	int w=new_image->header.width;
@@ -108,40 +112,39 @@ BMPIMAGE *Denoising(BMPIMAGE *image)
 				}
 				else
 				{
-					rgb =GetPixel(image,j-1,i-1);  //We add the pixels near the pixel(i,j) to compute the average.
-					GetRGB(rgb,&r,&g,&b);
-					sum+=(r+g+b)/3; 
+					for(int k=-1;k<2;k++)
+					{
+						rgb =GetPixel(image,j+k,i-1);  //We add the pixels near the pixel(i,j) to compute the average.
+						GetRGB(rgb,&r,&g,&b);
+						sum_r+=r;
+						sum_g+=g;
+						sum_b+=b; 
+					}
 					
-					rgb =GetPixel(image,j,i-1);
-					GetRGB(rgb,&r,&g,&b);
-					sum+=(r+g+b)/3;
-					
-					rgb =GetPixel(image,j+1,i-1);
-					GetRGB(rgb,&r,&g,&b);
-					sum+=(r+g+b)/3;
 					
 					rgb =GetPixel(image,j-1,i);
 					GetRGB(rgb,&r,&g,&b);
-					sum+=(r+g+b)/3;
+					sum_r+=r;
+					sum_g+=g;
+					sum_b+=b;
 					
 					rgb =GetPixel(image,j+1,i);
 					GetRGB(rgb,&r,&g,&b);
-					sum+=(r+g+b)/3;
+					sum_r+=r;
+					sum_g+=g;
+					sum_b+=b;
 					
-					rgb =GetPixel(image,j-1,i+1);
-					GetRGB(rgb,&r,&g,&b);
-					sum+=(r+g+b)/3;
+					for(int u=-1;u<2;u++)
+					{
+						rgb =GetPixel(image,j+u,i+1);
+						GetRGB(rgb,&r,&g,&b);
+						sum_r+=r;
+						sum_g+=g;
+						sum_b+=b;
+					}
 					
-					rgb =GetPixel(image,j,i+1);
-					GetRGB(rgb,&r,&g,&b);
-					sum+=(r+g+b)/3;
 					
-					rgb =GetPixel(image,j+1,i+1);
-					GetRGB(rgb,&r,&g,&b);
-					sum+=(r+g+b)/3;
-					
-					average= sum/8;
-					sum=0;
+					average= (sum_r+sum_g+sum_b)/24;
 					
 					rgb =GetPixel(image,j-1,i-1);  //This is to compute the etype
 					GetRGB(rgb,&r,&g,&b);
@@ -184,16 +187,17 @@ BMPIMAGE *Denoising(BMPIMAGE *image)
 					ecart=abs((int)((r+g+b)/3 -average));
 					if(ecart>etype)
 					{
-						new_image->data[i][j].R = average;
-						new_image->data[i][j].G = average;
-						new_image->data[i][j].B = average;
+						new_image->data[i][j].R = (int)sum_r/8;
+						new_image->data[i][j].G = (int)sum_g/8;
+						new_image->data[i][j].B = (int)sum_b/8;
 					}
 					else
 					{
-						new_image->data[i][j].R = r;
-						new_image->data[i][j].G = g;
-						new_image->data[i][j].B = b;
+						new_image->data[i][j] = image->data[i][j];
 					}
+					sum_r=0;
+					sum_g=0;
+					sum_b=0;
 				}
 			}
 		}
