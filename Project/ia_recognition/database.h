@@ -87,18 +87,18 @@ void createTDB(double **images, char *labels, size_t nb, char *pathImages, char 
 	fwrite(&nb_images, 1, sizeof(nb_images), fp1);
 	fwrite(&size, 1, sizeof(size), fp1);
 	fwrite(&size, 1, sizeof(size), fp1);
-	for (int y = 0; y < nb; y++){
+	for (size_t y = 0; y < nb; y++){
 		fwrite(images[y], 1, sizeof(double)*28*28, fp1);
 	}
 	fclose(fp1);
-	FILE *fp2 = fopen(pathImages, "wb");
+	FILE *fp2 = fopen(pathLabels, "wb");
 	if (fp2 == NULL){
 		printf("Unable to open the file.\n");
 		exit(EXIT_FAILURE);
 	}
 	fwrite(&mn2, 1, sizeof(mn2), fp2);
 	fwrite(&nb_images, 1, sizeof(nb_images), fp2);
-	for (int y = 0; y < nb; y++){
+	for (size_t y = 0; y < nb; y++){
 		char c = labels[y] - 'A' + 1;
 		fwrite(&c, 1, 1, fp2);
 	}
