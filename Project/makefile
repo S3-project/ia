@@ -1,6 +1,8 @@
 CC=gcc
-ARGS=  -Wall -Wextra -std=c99
-MATH= -lm
+ARGS=-Wall -Wextra -std=c99
+GTK= -pthread -pipe
+CCFLAGS=$(ARGS) $(GTK)
+LDFLAGS=-pthread `pkg-config --cflags --libs gtk+-3.0` -export-dynamic -lm
 
 SRC=$(shell find -mindepth 2 -name '*.c' -not -name "main.c")
 SRC += $(shell find -maxdepth 1 -name '*.c')
@@ -15,7 +17,7 @@ all:
 	$(MAKE) main
 
 main:
-	$(CC) $(ARGS) -o ./$(DIRNAME).exe $(ADD) $(OBJ) $(SRC) $(MATH)
+	$(CC) $(CCFLAGS) -o ./$(DIRNAME).exe $(ADD) $(OBJ) $(SRC) $(LDFLAGS)
 
 copy:
 	for i in $(DIRS); do(cp makefile $$i);done
