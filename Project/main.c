@@ -12,8 +12,13 @@
 #include "pre-processing/contrast.h"
 #include "pre-processing/negative.h"
 
-char *FILENAME = "chars_detected.txt";
-char *NEURALNETWORKNAME = "neural_network.nn";
+#define FILENAME "chars_detected.txt"
+#define NEURALNETWORKNAME "neural_network.nn"
+#define WRONGCOMMAND "Command Error, there is the commande you can do:\n\
+-graph\n\
+-ocr filepath neural_network_path rotation\n\
+-train data_base_image_path data_base_labels_path iteration neural_network\n"
+
 
 int isEqual(char *s1,char *s2)
 {
@@ -66,8 +71,6 @@ char * LaunchOCR(char *filepath, char *neuralNetworkFilepath, double rotation)
             }
         }
 
-        rand_set_seed(); //   CA LA FAUT LE METTRE OU ?
-
         text[i] =  predictNN(&neuralNetwork, input);
     }
     text[nb_chars] = '\0';
@@ -82,7 +85,8 @@ char * LaunchOCR(char *filepath, char *neuralNetworkFilepath, double rotation)
     return text;
 }
 
-void TrainIA(char *dataBaseImagesFilename, char *dataBaseLabelsFilename, char *neuralNetworkFileName, int iteration, double *progression)
+void TrainIA(char *dataBaseImagesFilename, char *dataBaseLabelsFilename, char *neuralNetworkFileName,
+             int iteration, double *progression)
 {
     NN neuralNetwork;
     size_t size = 28;
@@ -104,8 +108,12 @@ void TrainIA(char *dataBaseImagesFilename, char *dataBaseLabelsFilename, char *n
         while (i < tdb.nb_images)
         {
             trainNN(&neuralNetwork, tdb.images[i], tdb.labels[i]);
+
             if(i%1000 == 0)
                 *progression = (double)(a * tdb.nb_images + i) * 100.0 / (double) (tdb.nb_images * iteration);
+            printf("\r--> %.2f %c", *progression, '%');
+            fflush(stdout);
+
             i++;
         }
 
@@ -122,10 +130,12 @@ void TrainIA(char *dataBaseImagesFilename, char *dataBaseLabelsFilename, char *n
 
 int main(int argc, char ** argv)
 {
+    rand_set_seed();
     if(argc == 2 && isEqual(argv[1], "-graph"))
     {
         printf("need to implement the graphic part\n");
-    } else if (argc == 5 && isEqual(argv[1], "-ocr"))
+    }
+    else if (argc == 5 && isEqual(argv[1], "-ocr"))
     {
         FILE *file = fopen(argv[2], "r");
         FILE *networkFile = fopen(argv[3], "r");
@@ -136,6 +146,8 @@ int main(int argc, char ** argv)
 
         if(file != NULL && networkFile != NULL)
         {
+            fclose(file);
+            fclose(networkFile);
             text = LaunchOCR(argv[2], argv[3], rotation);
             size_t len = 0;
             printf("The OCR recognize this text :\n%s\nIt has been save in file %s\n", text, FILENAME);
@@ -144,22 +156,25 @@ int main(int argc, char ** argv)
                 len++;
             FILE *fileText = fopen(FILENAME, "w+");
             fwrite(text, 1, len, fileText);
-
             fclose(fileText);
-            fclose(file);
-            fclose(networkFile);
-        } else
+        }
+        else
         {
             printf("Error while loading files\n");
+            if(networkFile != NULL)
+                fclose(networkFile);
+            if(file != NULL)
+                fclose(file);
         }
 
-    } else if ((argc == 5 || argc == 6) && isEqual(argv[1], "-train"))
+    }
+    else if ((argc == 5 || argc == 6) && isEqual(argv[1], "-train"))
     {
         FILE *fileImages = fopen(argv[2], "r");
         FILE *fileLabels = fopen(argv[3], "r");
         FILE *networkFile = NULL;
         if(argc == 6)
-            fopen(argv[5], "r");
+            networkFile = fopen(argv[5], "r");
         int interation = 0;
         double progression = 0;
         sscanf(argv[4], "%d", &interation);
@@ -167,26 +182,32 @@ int main(int argc, char ** argv)
 
         if(fileImages != NULL && fileLabels != NULL && (argc == 5 || networkFile != NULL))
         {
-            if(networkFile != NULL)
-                TrainIA(argv[2], argv[3], argv[5], interation, &progression);
-            else
-                TrainIA(argv[2], argv[3], NULL, interation, &progression);
             fclose(fileImages);
             fclose(fileLabels);
+            printf("The neural network training is launched\nAt each loop it will be save under the following name: %s\n", NEURALNETWORKNAME);
+            if(networkFile != NULL)
+            {
+                fclose(networkFile);
+                TrainIA(argv[2], argv[3], argv[5], interation, &progression);
+            }
+
+            else
+                TrainIA(argv[2], argv[3], NULL, interation, &progression);
         }
         else
+        {
             printf("Error while loading files\n");
-
-
-        if(networkFile != NULL)
-            fclose(networkFile);
-
-    }else
+            if(networkFile != NULL)
+                fclose(networkFile);
+            if(fileImages != NULL)
+                fclose(fileImages);
+            if(fileLabels != NULL)
+                fclose(fileLabels);
+        }
+    }
+    else
     {
-        printf("Command Error, there is the commande you can do:\n");
-        printf("-graph\n");
-        printf("-ocr filepath neural_network_path rotation\n");
-        printf("-train data_base_image_path data_base_labels_path iteration neural_network\n");
+        printf("%s", WRONGCOMMAND);
     }
 
     return 0;

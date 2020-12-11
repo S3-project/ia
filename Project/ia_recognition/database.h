@@ -72,7 +72,7 @@ TDB getTrainData(char *pathImages, char *pathLabels){
 	return tdb;
 }
 
-void createTDB(double **images, char *labels, size_t nb, char *pathImages, char *pathLabels){
+void createTDB(uint8_t **images, char *labels, size_t nb, char *pathImages, char *pathLabels){
 	int32_t mn1 = ReverseInt(2051);
 	int32_t mn2 = ReverseInt(2049);
 	int32_t nb_images = ReverseInt((int32_t)nb);
@@ -88,7 +88,7 @@ void createTDB(double **images, char *labels, size_t nb, char *pathImages, char 
 	fwrite(&size, 1, sizeof(size), fp1);
 	fwrite(&size, 1, sizeof(size), fp1);
 	for (size_t y = 0; y < nb; y++){
-		fwrite(images[y], 1, sizeof(double)*28*28, fp1);
+		fwrite(images[y], 1, sizeof(uint8_t)*28*28, fp1);
 	}
 	fclose(fp1);
 	FILE *fp2 = fopen(pathLabels, "wb");
