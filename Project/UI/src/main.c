@@ -70,6 +70,18 @@ void save_text()
 	g_print("save_text()\n");
 }
 
+//new file is setted
+void file_set()
+{
+	g_print("file_set()\n");
+}
+
+//new neural network file is setted
+void file_setNN()
+{
+	g_print("file_setNN()\n");
+}
+
 // called when window is closed
 void gtk_quit()
 {
