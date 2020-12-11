@@ -7,8 +7,14 @@
       <mime-type>image/bmp</mime-type>
     </mime-types>
   </object>
+  <object class="GtkFileFilter" id="filefilter2">
+    <patterns>
+      <pattern>*.nn</pattern>
+    </patterns>
+  </object>
   <object class="GtkTextBuffer" id="textbuffer1">
-    <property name="text" translatable="yes">Informations are written here and after a launch prints out the result.</property>
+    <property name="text" translatable="yes">Informations are written here and 
+after a launch prints out the result.</property>
   </object>
   <object class="GtkWindow" id="main_window">
     <property name="name">main_window</property>
@@ -86,7 +92,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="trainNN" object="textbuffer1" swapped="no"/>
+                    <signal name="clicked" handler="signal_trainNN" object="textbuffer1" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -113,6 +119,7 @@
                       <object class="GtkFileChooserButton">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="filter">filefilter2</property>
                         <property name="title" translatable="yes"/>
                         <signal name="file-set" handler="file_setNN" swapped="no"/>
                       </object>
@@ -196,6 +203,7 @@ Rotate :
                       <object class="GtkEntry" id="rotate">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <signal name="activate" handler="activate_rotation" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>

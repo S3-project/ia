@@ -13,6 +13,7 @@
 #include "pre-processing/negative.h"
 #include "UI/src/UIgtk.h"
 
+
 char *FILENAME = "chars_detected.txt";
 char *NEURALNETWORKNAME = "neural_network.nn";
 

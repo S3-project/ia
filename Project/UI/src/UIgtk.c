@@ -14,9 +14,12 @@ typedef struct
 } SGlobalData;
 
 #define UNUSED(x) (void)(x)
-
-gchar *Filename = "";
-char *Text = "";
+gchar *Image_path=NULL;
+gchar *NN_path=NULL;
+gchar *Input_Rotation;
+char *Text;
+double Angle;
+int indice_sscanf;
 
 int UI()
 {
@@ -32,7 +35,7 @@ int UI()
     // Loads the UI description.
     // (Exits if an error occurs.)
     GError* error = NULL;
-    if (gtk_builder_add_from_file(builder, "glade/main.glade", &error) == 0)
+    if (gtk_builder_add_from_file(builder, "UI/glade/main.glade", &error) == 0)
     {
         g_printerr("Error loading file: %s\n", error->message);
         g_clear_error(&error);
@@ -50,22 +53,22 @@ int UI()
     g_object_unref(builder);
 
     gtk_widget_show(window);  
-    gtk_window_set_title(GTK_WINDOW(window), "OCR window");              
+    gtk_window_set_title(GTK_WINDOW(window), "OCR");              
     gtk_main();
 
     return 0;
 }
 
 // called when Launch Neural Network button is clicked
-void signal_trainNN(GtkButton *button, GtkTextBuffer *buffer)
+void signal_trainNN(GtkTextBuffer *buffer)
 {
 	g_print("trainNN()\n");
 	double d=0;
-	gtk_text_buffer_set_text(buffer,"IA is training",14);
-	TrainIA("../../../Ressources/Lettres/emnist-letters-train-images-idx3-ubyte",
-	        "../../../Ressources/Lettres/emnist-letters-train-labels-idx1-ubyte",
+	gtk_text_buffer_set_text(buffer,"IA trained",10);
+	TrainIA("../Ressources/Lettres/emnist-letters-train-images-idx3-ubyte",
+	        "../Ressources/Lettres/emnist-letters-train-labels-idx1-ubyte",
 	        NULL,
-	        100,
+	        1,
 	        &d);
 }
 
@@ -76,30 +79,59 @@ void load_image(GtkButton *button, GtkImage *image)
 }
 
 //called when LaunchOCR button is clicked
-void launchOCR(GtkButton *button, GtkTextBuffer *buffer)
+void launchOCR(GtkButton *button,GtkTextBuffer *buffer)
 {
 	g_print("launchOCR()\n");
-	gtk_text_buffer_set_text(buffer,"OCR is proceeding",17);
+	
 	//Third parameter is the rotation
-	LaunchOCR("",NULL,0);
+	Text="Error no files given";
+	if(Image_path && NN_path)
+		Text=LaunchOCR((char*)Image_path,(char*)NN_path,Angle);
+	int len=0;
+	while(Text[len]!='\0')
+		len++;
+	gtk_text_buffer_set_text(buffer,(gchar*)Text,len);
 }
 
 //called when Save Text button is clicked
 void save_text(GtkButton *button, GtkTextBuffer *buffer)
 {	
 	g_print("save_text()\n");
+	GtkWidget *dialog;
+  	GtkWidget *toplevel = gtk_widget_get_toplevel (GTK_WIDGET(button));
+  	dialog = gtk_file_chooser_dialog_new ("Save Text ",
+                    GTK_WINDOW (toplevel),
+                    GTK_FILE_CHOOSER_ACTION_SAVE,
+                    "Cancel", GTK_RESPONSE_CANCEL,
+                    "Save", GTK_RESPONSE_ACCEPT,
+                    NULL);
+        if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
+  	{
+    		char *filename;
+    		filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+    		// set the contents of the file to the text from the buffer
+    		g_file_set_contents (filename, Text, strlen(Text), NULL);
+  	}
+  	gtk_widget_destroy (dialog);
 }
 
 //new file is setted
-void file_set()
+void file_set(GtkFileChooser *file)
 {
-	g_print("file_set()\n");
+	Image_path=gtk_file_chooser_get_filename(file);
+}
+
+void activate_rotation(GtkEntry *entry)
+{
+	Input_Rotation=gtk_entry_get_text(entry);
+	Angle=0;
+	indice_sscanf =sscanf((char*)Input_Rotation, "%lf", &Angle);
 }
 
 //new neural network file is setted
-void file_setNN()
+void file_setNN(GtkFileChooser *file)
 {
-	g_print("file_setNN()\n");
+	NN_path=gtk_file_chooser_get_filename(file);	
 }
 
 // called when window is closed
