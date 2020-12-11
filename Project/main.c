@@ -45,6 +45,10 @@ int isEqual(char *s1,char *s2)
 
 char * LaunchOCR(char *filepath, char *neuralNetworkFilepath, double rotation)
 {
+    /*
+     * Launch the detection of characters after having applied the rotation, denoising and made a picture in
+     * black and white
+     */
     size_t nb_chars = 0;
     int counter = 0;
     size_t sizeImage = 28;
@@ -88,6 +92,10 @@ char * LaunchOCR(char *filepath, char *neuralNetworkFilepath, double rotation)
 void TrainIA(char *dataBaseImagesFilename, char *dataBaseLabelsFilename, char *neuralNetworkFileName,
              int iteration, double *progression)
 {
+    /*
+     * This part train the neural network and print regularly the progression
+     * At each loop save the neural network in a file in the case of the program ended unexpectedly
+     */
     NN neuralNetwork;
     size_t size = 28;
     int nbHiddensLayer = 100;
@@ -130,6 +138,10 @@ void TrainIA(char *dataBaseImagesFilename, char *dataBaseLabelsFilename, char *n
 
 int main(int argc, char ** argv)
 {
+    /*
+     * Launch the program in graphique or console mode
+     * You can do the neural network training or the detection in both mode
+     */
     rand_set_seed();
     if(argc == 2 && isEqual(argv[1], "-graph"))
     {
