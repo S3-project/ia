@@ -56,7 +56,7 @@ char * LaunchOCR(char *filepath, char *neuralNetworkFilepath, double rotation)
 
     BMPIMAGE *img = LoadBitmap(filepath);
     img =  Rotate(rotation, img);
-    img = Denoising(img);
+    //img = Denoising(img);
     img = ToGrayBitmap(img);
     img = ToBlackWhite(img);
     BMPIMAGE **img_chars = DetectChars(img, &nb_chars, 0);
