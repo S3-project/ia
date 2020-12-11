@@ -3,9 +3,9 @@
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <object class="GtkFileFilter" id="filefilter1">
-    <mime-types>
-      <mime-type>image/bmp</mime-type>
-    </mime-types>
+    <patterns>
+      <pattern>.bmp</pattern>
+    </patterns>
   </object>
   <object class="GtkTextBuffer" id="textbuffer1">
     <property name="text" translatable="yes">Your text will appear here !
@@ -251,7 +251,6 @@ Rotate :
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="margin_right">58</property>
-                <property name="stock">gtk-bold</property>
               </object>
               <packing>
                 <property name="expand">False</property>

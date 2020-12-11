@@ -8,6 +8,7 @@
 #include <string.h>
 #include "../other/Bitmap/bitmap.h"
 
+
 int IsLineWhite(BMPIMAGE *image, uint32_t y)
 {
     uint32_t x = 0;
@@ -177,21 +178,89 @@ BMPIMAGE ** GetChars(BMPIMAGE **lines, size_t *sizeLines, size_t *sizeChar)
     return imgChar;
 }
 
+void ResizeChars(BMPIMAGE **chars, size_t *nbChars, BMPIMAGE **tab)
+{
+    size_t size = 28;
+    size_t offset = 0;
+    double row;
+    double col;
+    double factorRow;
+    double factorCol;
+    BMPIMAGE *image;
+    BMPIMAGE  *imageResize[*nbChars];
 
-BMPIMAGE ** DetectChars(BMPIMAGE *image, int print, size_t *number_chars)
+    for(size_t i = 0; i < *nbChars; i++)
+    {
+        image = chars[i];
+        row = image->header.heigth;
+        while((int)row%size != 0)
+            row++;
+        col = image->header.width;
+        while((int)col%size != 0)
+            col++;
+
+        imageResize[i] = CreateImage(row, col);
+
+        int WhiteRowOffset = (row - image->header.heigth) / 2;
+        int WhiteColOffset = (col - image->header.width) / 2;
+
+
+        for(size_t j = 0; j < image->header.heigth; j++)
+        {
+            for(size_t k = 0; k < image->header.width; k++)
+            {
+                imageResize[i]->data[j + WhiteRowOffset][k + WhiteColOffset] = image->data[j][k];
+            }
+        }
+    }
+
+
+    for(size_t i = 0; i < *nbChars; i++)
+    {
+        image = imageResize[i];
+        tab[i] = CreateImage(size, size);
+
+
+        factorRow = image->header.heigth / (size - offset * 2.0);
+        factorCol = image->header.width / (size  - offset * 2.0);
+
+        row = 0;
+        for(size_t j = offset; j < size - offset; j++)
+        {
+            col = 0;
+            for(size_t k = offset; k < size - offset; k++)
+            {
+                tab[i]->data[j][k] = image->data[(int)row][(int)col];
+                col += factorCol;
+            }
+            row += factorRow;
+        }
+    }
+}
+
+
+
+BMPIMAGE ** DetectChars(BMPIMAGE *image, size_t *number_chars, int print)
 {
 
-    size_t mallocSizeLines = 0;
+    size_t number_lines = 0;
 
-    BMPIMAGE **lines = GetLines(image, &mallocSizeLines);
-    BMPIMAGE **chars = GetChars(lines, &mallocSizeLines, number_chars);
+    BMPIMAGE **lines = GetLines(image, &number_lines);
+    BMPIMAGE **chars = GetChars(lines, &number_lines, number_chars);
+    BMPIMAGE **charsCorrectSize = malloc(sizeof (BMPIMAGE)* *number_chars);
+
+    ResizeChars(chars, number_chars, charsCorrectSize);
+
     if(print == 1)
-        SaveChar(lines, &mallocSizeLines);
+        SaveChar(charsCorrectSize, number_chars);
 
-    for(size_t i = 0; i < mallocSizeLines; i++)
+    for(size_t i = 0; i < number_lines; i++)
         FreeBitmap(lines[i]);
     free(lines);
+    for(size_t i = 0; i < *number_chars; i++)
+        FreeBitmap(chars[i]);
+    free(chars);
 
-    return chars;
+    return charsCorrectSize;
 }
 

@@ -1,11 +1,28 @@
-#include <gtk/gtk.h>
+# include <err.h>
+# include <stdlib.h>
+# include <stdio.h>
+# include <gtk/gtk.h>
+# include <SDL/SDL.h>
+# include <SDL/SDL_image.h>
 
+
+
+
+typedef struct
+{
+	GtkBuilder *builder;
+	gpointer user_data;
+} SGlobalData;
+
+#define UNUSED(x) (void)(x)
+
+gchar *filename = "";
+char *text = "";
 
 int main(int argc, char *argv[])
 {
     GtkWidget *window;
     //GtkWidget *filename;
-    //GtkWidget *g_lbl_count;
 
     // Initializes GTK.
     gtk_init(NULL, NULL);
@@ -30,11 +47,11 @@ int main(int argc, char *argv[])
     
     // get pointers to the labels
     //filename = GTK_WIDGET(gtk_builder_get_object(builder, "filename"));
-    //g_lbl_count = GTK_WIDGET(gtk_builder_get_object(builder, "lbl_count"));
 
     g_object_unref(builder);
 
-    gtk_widget_show(window);                
+    gtk_widget_show(window);  
+    gtk_window_set_title(GTK_WINDOW(window), "OCR window");              
     gtk_main();
 
     return 0;
@@ -53,20 +70,20 @@ void saveNN()
 }
 
 //called when Load Image button is clicked
-void load_image()
+void load_image(GtkButton *button, GtkImage *image)
 {
 	g_print("load_image()\n");
 }
 
 //called when LaunchOCR button is clicked
-void launchOCR()
+void launchOCR(GtkButton *button, GtkTextBuffer *buffer)
 {
 	g_print("launchOCR()\n");
 }
 
 //called when Save Text button is clicked
-void save_text()
-{
+void save_text(GtkButton *button, GtkTextBuffer *buffer)
+{	
 	g_print("save_text()\n");
 }
 

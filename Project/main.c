@@ -1,177 +1,111 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "main.h"
+#include "characters_detection/characters_detection.h"
+#include "ia_recognition/database.h"
+#include "ia_recognition/ia.h"
 #include "other/Bitmap/bitmap.h"
-#include "ia_recognition/xor_ia.h"
 #include "pre-processing/Removing_Colors/rmcolors.h"
 #include "pre-processing/Rotate/rotate.h"
-#include "characters_detection/characters_detection.h"
+#include "pre-processing/contrast.h"
+#include "pre-processing/negative.h"
 
 
 
-int	isEqual(char* s1, char *s2)
+
+char * LaunchOCR(char *filename, char *neuralNetworkFileName, double rotation)
 {
-	int i = 0;
-	int res = 1;
-	while (s1[i])
-	{
-		char c  = s1[i];
-		if (s2[i])
-		{
-			if (c != s2[i])
-				res = 0;
+    size_t nb_chars = 0;
+    int counter = 0;
+    size_t sizeImage = 28;
+    double *input = malloc(sizeof(double) * sizeImage * sizeImage);
 
-		}else
-		{
-			res = 0;
-		}
-		i++;
-	}
-	if (s2[i])
-		res = 0;
-	return res;
+    BMPIMAGE *img = LoadBitmap(filename);
+    img =  Rotate(rotation, img);
+    img = Denoising(img);
+    img = ToGrayBitmap(img);
+    img = ToBlackWhite(img);
+    BMPIMAGE **img_chars = DetectChars(img, &nb_chars, 0);
+    char *text = malloc(sizeof(char) * (nb_chars + 1));
+    NN neuralNetwork = LoadNN(neuralNetworkFileName, 1);
+
+    for(size_t i = 0; i < nb_chars; i++)
+    {
+        counter = 0;
+        negative(img_chars[i], sizeImage, sizeImage);
+        for (size_t y = 0; y < img_chars[i]->header.heigth; y++)
+        {
+            for (size_t x = 0; x < img_chars[i]->header.width; x++)
+            {
+                input[counter++] = (double) img_chars[i]->data[y][x].R / 255.0;
+            }
+        }
+
+        rand_set_seed(); //   CA LA FAUT LE METTRE OU ?
+
+        text[i] =  predictNN(&neuralNetwork, input);
+    }
+    text[nb_chars] = '\0';
+
+
+    for (size_t i = 0; i < nb_chars; i++)
+    {
+        FreeBitmap(img_chars[i]);
+    }
+    FreeBitmap(img);
+
+    return text;
 }
 
+void TrainIA(char *dataBaseImagesFilename, char *dataBaseLabelsFilename, char *neuralNetworkFileName, int iteration, double *progression)
+{
+    int PERIOD_REFRESH = 5;
+
+    NN neuralNetwork;
+    size_t size = 28;
+    int nbHiddensLayer = 100;
+    int nbOutputs = 26;
+    double lr = 0.1;
+    double regression = 0.85;
+    char *exitPathName = "neural_network.nn";
+    TDB tdb = getTrainData(dataBaseImagesFilename, dataBaseLabelsFilename);
+
+    if(neuralNetworkFileName == NULL)
+        neuralNetwork = InitializeNN(size*size,nbHiddensLayer,nbOutputs);
+    else
+        neuralNetwork = LoadNN(neuralNetworkFileName, lr);
 
 
+    neuralNetwork.lr = lr;
+    for (int a = 0; a < iteration; a++){
+        int i = 0;
+        while (i + PERIOD_REFRESH < tdb.nb_images){
+            for (int b = i; b < i + PERIOD_REFRESH; b++){
+                trainNN(&neuralNetwork, tdb.images[b], tdb.labels[b]);
+            }
+            if(i%1000 == 0)
+                *progression = (double)(i+1) * 100.0 / (double) (tdb.nb_images * iteration);
+            i += PERIOD_REFRESH;
+        }
+        for (int b = i; b < tdb.nb_images; b++){
+            trainNN(&neuralNetwork, tdb.images[b], tdb.labels[b]);
+        }
+        if(a % 4 == 0){
+            neuralNetwork.lr *= regression;
+        }
+    }
 
 
-char pathimg[] = "Images/origin.bmp";
-char pathimg_cpy[] = "Images/origin_copy.bmp";
-char pathimg_rot[] = "Images/origin_rot.bmp";
-char pathimg_denoise[] = "Images/origin_denoise.bmp";
-char pathimg_gray[] = "Images/origin_gray.bmp";
-char pathimg_bin[] = "Images/origin_bin.bmp";
+    SaveNN(&neuralNetwork, exitPathName);
+    FreeTDB(&tdb);
+    FreeNN(&neuralNetwork);
+}
 
-int main(int argc, char ** argv)
+int main(/*int argc, char ** argv*/)
 {
 
-
-	if (argc <= 1)
-	{
-		printf("Erreur de syntaxe.\nSyntaxe: %s {cmd}\n", argv[0]);
-		return 0;
-	}
-
-	if (isEqual(argv[1], "XOR") || isEqual(argv[1], "xor"))
-	{
-		if (argc != 4)
-		{
-			printf("Erreur de syntaxe.\nSyntaxe: %s %s {nb_iter} {learning_rate}\n", argv[0], argv[1]);
-			return 0;
-		}
-		int nb_iter;
-		double learning_rate;
-		sscanf(argv[2], "%d", &nb_iter);
-		sscanf(argv[3], "%lf", &learning_rate);
-		xor(nb_iter, learning_rate);
-		return 1;
-	}else if (!isEqual(argv[1], "bitmaps"))
-	{
-		printf("La commande %s n'existe pas.\n", argv[1]);
-		return 0;
-	}
-
-
-
-
-	printf ("--- Présentation soutenance 1 ---\n\n");
-	
-	printf("Appuyez sur <ENTREE> pour commencer.\n");
-	getchar();	
-
-
-	/*Loading image*/	
-	printf ("1) Chargement d'une image\n");
-	printf("	Chemin de l'image d'origine: %s\n	...\n", pathimg);
-	BMPIMAGE *img = LoadBitmap(pathimg);
-	printf("	Image chargée dans la mémoire.\n");
-	SaveBitmap(img, pathimg_cpy);
-	printf("	Une copie a été sauvegardée dans : %s\n", pathimg_cpy);
-
-
-	printf ("\n\n");
-
-	printf ("\n2) Rotation de l'image\n");
-	printf("	Appuyez sur <ENTREE> pour continuer.");
-	getchar();
-	printf("	Degré de rotation : -90°\n	...\n");
-	BMPIMAGE *img_rot =  Rotate(-90, img);
-	printf("	Image a été tournée de -90°.\n");
-	SaveBitmap(img_rot, pathimg_rot);
-	printf("	Une copie a été sauvegardée dans : %s\n", pathimg_rot);
-
-
-	printf ("\n\n");
-
-
-	printf ("\n3) Déparasitage de l'image\n");
-	printf("	Appuyez sur <ENTREE> pour continuer.");
-	getchar();
-	printf("	Déparasitage de l'image tournée\n	...\n");
-	BMPIMAGE *img_denoise = Denoising(img_rot);
-	SaveBitmap(img_denoise, pathimg_denoise);
-	printf("	Une copie a été sauvegardée dans : %s\n", pathimg_denoise);
-	printf("	Appuyez sur <ENTREE> pour continuer.");
-
-
-	printf ("\n\n\n");
-
-
-	printf ("\n4) Binarisation de l'image\n");
-	printf("	Appuyez sur <ENTREE> pour continuer.");
-	getchar();
-	printf("	Convertion de l'image en niveau de gris.\n	...\n");
-	BMPIMAGE *img_gray = ToGrayBitmap(img_denoise);
-	SaveBitmap(img_gray, pathimg_gray);
-	printf("	Une copie a été sauvegardée dans : %s\n", pathimg_gray);
-	printf("	Appuyez sur <ENTREE> pour continuer.");
-	getchar();
-	printf("	Binarisation de l'image a partir de celle en niveau de gris.\n	...\n");
-	BMPIMAGE *img_bin = ToBlackWhite(img_gray);
-	SaveBitmap(img_bin, pathimg_bin);
-	printf("	Une copie a été sauvegardée dans : %s\n", pathimg_bin);
-
-
-
-	printf ("\n\n");
-
-
-
-	/* Segmentation en lignes */
-	printf ("\n5) Segmentation de l'image en lignes\n");
-	printf("	Appuyez sur <ENTREE> pour continuer.");
-	getchar();
-	size_t nb_chars = 0;
-	printf("	Séparation des lignes.\n	...\n");
-	BMPIMAGE **img_chars = DetectChars(img_bin, 1, &nb_chars);
-	printf("	Des copies ont été sauvegardées dans le dossier: Images/Lines/\n");
-	printf("	Appuyez sur <ENTREE> pour continuer.");
-	getchar();
-	printf("	Séparation des caractères.\n	...\n");
-
-	
-	for (size_t i = 0; i < nb_chars; i++)
-	{
-    		char number[10 + 5];
-    		char str[100] = "./Images/Characters/";
-    		strcat(str, IntToNameFile(i, number));
-		SaveBitmap(img_chars[i], str);
-	}
-
-	printf("	Des copies ont été sauvegardées dans le dossier: Images/Characters/\n");
-
-	for (size_t i = 0; i < nb_chars; i++)
-	{
-
-		FreeBitmap(img_chars[i]);
-	}	
-	FreeBitmap(img);
-	FreeBitmap(img_rot);
-	FreeBitmap(img_denoise);
-	FreeBitmap(img_gray);
-	FreeBitmap(img_bin);
-	return 0;
+    return 0;
 }
 
 

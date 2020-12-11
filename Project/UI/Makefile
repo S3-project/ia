@@ -52,9 +52,9 @@ all: $(OBJS)
 
     
 
-main.o: src/main.c
+main.o: src/UIgtk.c
 
-	$(CC) -c $(CCFLAGS) src/main.c $(GTKLIB) -o main.o
+	$(CC) -c $(CCFLAGS) src/UIgtk.c $(GTKLIB) -o main.o
 
     
 
