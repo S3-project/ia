@@ -72,6 +72,40 @@ TDB getTrainData(char *pathImages, char *pathLabels){
 	return tdb;
 }
 
+void createTDB(double **images, char *labels, size_t nb, char *pathImages, char *pathLabels){
+	int32_t mn1 = ReverseInt(2051);
+	int32_t mn2 = ReverseInt(2049);
+	int32_t nb_images = ReverseInt((int32_t)nb);
+	int32_t size = ReverseInt(28);
+
+	FILE *fp1 = fopen(pathImages, "wb");
+	if (fp1 == NULL){
+		printf("Unable to open the file.\n");
+		exit(EXIT_FAILURE);
+	}
+	fwrite(&mn1, 1, sizeof(mn1), fp1);
+	fwrite(&nb_images, 1, sizeof(nb_images), fp1);
+	fwrite(&size, 1, sizeof(size), fp1);
+	fwrite(&size, 1, sizeof(size), fp1);
+	for (int y = 0; y < nb; y++){
+		fwrite(images[y], 1, sizeof(double)*28*28, fp1);
+	}
+	fclose(fp1);
+	FILE *fp2 = fopen(pathImages, "wb");
+	if (fp2 == NULL){
+		printf("Unable to open the file.\n");
+		exit(EXIT_FAILURE);
+	}
+	fwrite(&mn2, 1, sizeof(mn2), fp2);
+	fwrite(&nb_images, 1, sizeof(nb_images), fp2);
+	for (int y = 0; y < nb; y++){
+		char c = labels[y] - 'A' + 1;
+		fwrite(&c, 1, 1, fp2);
+	}
+	fclose(fp2);
+
+}
+
 void FreeTDB(TDB *tdb){
 	for (uint32_t i = 0; i < 1; i++){
 		free(tdb->images[i]);
