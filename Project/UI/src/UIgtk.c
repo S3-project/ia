@@ -2,10 +2,9 @@
 # include <stdlib.h>
 # include <stdio.h>
 # include <gtk/gtk.h>
-# include <SDL/SDL.h>
-# include <SDL/SDL_image.h>
 
 
+# include "../../main.h"
 
 
 typedef struct
@@ -16,10 +15,10 @@ typedef struct
 
 #define UNUSED(x) (void)(x)
 
-gchar *filename = "";
-char *text = "";
+gchar *Filename = "";
+char *Text = "";
 
-int main(int argc, char *argv[])
+int UI()
 {
     GtkWidget *window;
     //GtkWidget *filename;
@@ -58,15 +57,16 @@ int main(int argc, char *argv[])
 }
 
 // called when Launch Neural Network button is clicked
-void trainNN()
+void signal_trainNN(GtkButton *button, GtkTextBuffer *buffer)
 {
 	g_print("trainNN()\n");
-}
-
-//called when Save Neural Network button is clicked
-void saveNN()
-{
-	g_print("saveNN()\n");
+	double d=0;
+	gtk_text_buffer_set_text(buffer,"IA is training",14);
+	TrainIA("../../../Ressources/Lettres/emnist-letters-train-images-idx3-ubyte",
+	        "../../../Ressources/Lettres/emnist-letters-train-labels-idx1-ubyte",
+	        NULL,
+	        100,
+	        &d);
 }
 
 //called when Load Image button is clicked
@@ -79,6 +79,9 @@ void load_image(GtkButton *button, GtkImage *image)
 void launchOCR(GtkButton *button, GtkTextBuffer *buffer)
 {
 	g_print("launchOCR()\n");
+	gtk_text_buffer_set_text(buffer,"OCR is proceeding",17);
+	//Third parameter is the rotation
+	LaunchOCR("",NULL,0);
 }
 
 //called when Save Text button is clicked

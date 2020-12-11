@@ -11,6 +11,7 @@
 #include "pre-processing/Rotate/rotate.h"
 #include "pre-processing/contrast.h"
 #include "pre-processing/negative.h"
+#include "UI/src/UIgtk.h"
 
 char *FILENAME = "chars_detected.txt";
 char *NEURALNETWORKNAME = "neural_network.nn";
@@ -125,6 +126,7 @@ int main(int argc, char ** argv)
     if(argc == 2 && isEqual(argv[1], "-graph"))
     {
         printf("need to implement the graphic part\n");
+        UI();
     } else if (argc == 5 && isEqual(argv[1], "-ocr"))
     {
         FILE *file = fopen(argv[2], "r");

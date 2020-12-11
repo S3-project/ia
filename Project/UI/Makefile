@@ -2,8 +2,6 @@
 
 TARGET=template_app
 
-
-
 # compiler
 
 CC=gcc
@@ -18,7 +16,7 @@ OPT=-O0
 
 # warnings
 
-WARN=-Wall
+WARN=-Wall -Wextra -std=c99
 
 
 
@@ -38,7 +36,7 @@ GTKLIB=`pkg-config --cflags --libs gtk+-3.0`
 
 LD=gcc
 
-LDFLAGS=$(PTHREAD) $(GTKLIB) -export-dynamic
+LDFLAGS=$(PTHREAD) $(GTKLIB) -export-dynamic -lm
 
 
 
@@ -48,15 +46,13 @@ OBJS=main.o
 
 all: $(OBJS)
 
-	$(LD) -o $(TARGET) $(OBJS) $(LDFLAGS)
+	$(LD) -o $(TARGET) ../main.c $(OBJS) $(LDFLAGS)
 
     
 
 main.o: src/UIgtk.c
 
-	$(CC) -c $(CCFLAGS) src/UIgtk.c $(GTKLIB) -o main.o
-
-    
+	$(CC) -c $(CCFLAGS) ../main.c src/UIgtk.c $(GTKLIB) -o main.o   
 
 clean:
 	rm -f *.o $(TARGET)

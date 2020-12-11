@@ -3,15 +3,12 @@
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <object class="GtkFileFilter" id="filefilter1">
-    <patterns>
-      <pattern>.bmp</pattern>
-    </patterns>
+    <mime-types>
+      <mime-type>image/bmp</mime-type>
+    </mime-types>
   </object>
   <object class="GtkTextBuffer" id="textbuffer1">
-    <property name="text" translatable="yes">Your text will appear here !
-But first open an image 
-then load the image 
-and press Launch OCR !</property>
+    <property name="text" translatable="yes">Informations are written here and after a launch prints out the result.</property>
   </object>
   <object class="GtkWindow" id="main_window">
     <property name="name">main_window</property>
@@ -89,7 +86,7 @@ and press Launch OCR !</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="trainNN" swapped="no"/>
+                    <signal name="clicked" handler="trainNN" object="textbuffer1" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -129,20 +126,6 @@ and press Launch OCR !</property>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton" id="NN_save">
-                    <property name="label" translatable="yes">Save Neural Network</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <signal name="clicked" handler="saveNN" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">3</property>
                   </packing>
                 </child>
               </object>
@@ -251,6 +234,7 @@ Rotate :
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="margin_right">58</property>
+                <property name="stock">gtk-bold</property>
               </object>
               <packing>
                 <property name="expand">False</property>
