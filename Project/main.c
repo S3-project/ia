@@ -12,6 +12,9 @@
 #include "pre-processing/contrast.h"
 #include "pre-processing/negative.h"
 
+char *FILENAME = "chars_detected.txt";
+char *NEURALNETWORKNAME = "neural_network.nn";
+
 int isEqual(char *s1,char *s2)
 {
     int i = 0;
@@ -87,7 +90,6 @@ void TrainIA(char *dataBaseImagesFilename, char *dataBaseLabelsFilename, char *n
     int nbOutputs = 26;
     double lr = 0.1;
     double regression = 0.85;
-    char *exitPathName = "neural_network.nn";
     TDB tdb = getTrainData(dataBaseImagesFilename, dataBaseLabelsFilename);
 
     if(neuralNetworkFileName == NULL)
@@ -111,7 +113,7 @@ void TrainIA(char *dataBaseImagesFilename, char *dataBaseLabelsFilename, char *n
             neuralNetwork.lr *= regression;
         }
 
-        SaveNN(&neuralNetwork, exitPathName);
+        SaveNN(&neuralNetwork, NEURALNETWORKNAME);
     }
 
     FreeTDB(&tdb);
@@ -135,10 +137,14 @@ int main(int argc, char ** argv)
         if(file != NULL && networkFile != NULL)
         {
             text = LaunchOCR(argv[2], argv[3], rotation);
-            printf("The OCR recognize this text :\n%s\nIt has been save in file chars_detected.txt\n", text);
+            size_t len = 0;
+            printf("The OCR recognize this text :\n%s\nIt has been save in file %s\n", text, FILENAME);
 
-            FILE *fileText = fopen("chars_detected.txt", "w+");
-            fwrite(text, 1, sizeof(text), fileText);
+            while(text[len] != '\0')
+                len++;
+            FILE *fileText = fopen(FILENAME, "w+");
+            fwrite(text, 1, len, fileText);
+
             fclose(fileText);
             fclose(file);
             fclose(networkFile);
