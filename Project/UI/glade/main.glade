@@ -85,20 +85,6 @@ after a launch prints out the result.</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="NN_train">
-                    <property name="label" translatable="yes">Launch Neural Network Training</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <signal name="clicked" handler="signal_trainNN" object="textbuffer1" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkGrid">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -126,6 +112,20 @@ after a launch prints out the result.</property>
                         <property name="top_attach">0</property>
                       </packing>
                     </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="NN_train">
+                    <property name="label" translatable="yes">Window for Neural Network Training</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <signal name="clicked" handler="signal_trainNN" object="textbuffer1" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -185,7 +185,7 @@ Rotate :
                       <object class="GtkEntry" id="rotate">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <signal name="activate" handler="activate_rotation" swapped="no"/>
+                        <signal name="activate" handler="activate_rotation" object="image" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>

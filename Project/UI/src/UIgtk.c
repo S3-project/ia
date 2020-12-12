@@ -1,19 +1,17 @@
 # include <err.h>
 # include <stdlib.h>
 # include <stdio.h>
+#include <stdint.h>
 # include <gtk/gtk.h>
 
 
 # include "../../main.h"
+# include "../../pre-processing/Rotate/rotate.h"
+# include "../../other/Bitmap/bitmap.h"
 
-
-typedef struct
-{
-	GtkBuilder *builder;
-	gpointer user_data;
-} SGlobalData;
 
 #define UNUSED(x) (void)(x)
+
 gchar *Image_path=NULL;
 gchar *NN_path=NULL;
 gchar *Input_Rotation;
@@ -117,12 +115,24 @@ void file_set(GtkFileChooser *file,GtkImage *image)
 	gtk_image_set_from_file (GTK_IMAGE (image), Image_path);
 }
 
-void activate_rotation(GtkEntry *entry)
+void activate_rotation(GtkEntry *entry,GtkImage *image)
 {
 	Input_Rotation=(gchar*)gtk_entry_get_text(entry);
-	g_print("    %s \n",Input_Rotation);
+	g_print("    %s \n",(char*)Input_Rotation);
 	Angle=0;
 	indice_sscanf =sscanf((char*)Input_Rotation, "%lf", &Angle);
+	UNUSED(image);
+	/*if(indice_sscanf)
+	{
+		BMPIMAGE *bmp_image = LoadBitmap((char*)Image_path);
+		
+		BMPIMAGE *rotateimage = Rotate(Angle,bmp_image);
+		
+		SaveBitmap(rotateimage, (char*)Image_path);
+		FreeBitmap(rotateimage);
+		FreeBitmap(bmp_image);
+		gtk_image_set_from_file (GTK_IMAGE (image), Image_path);
+	}*/
 }
 
 //new neural network file is setted
@@ -136,3 +146,4 @@ void gtk_quit()
 {
     gtk_main_quit();
 }
+
