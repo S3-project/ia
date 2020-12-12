@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#define PERIOD_REFRESH 10000
-#define NB_IMAGES_GETERROR 10000
+#define PERIOD_REFRESH 100
+#define NB_IMAGES_GETERROR 1000
 #define PATH_SAVE_GRAPH "train3_lr0.1_q0.85.csv"
 #define TRAIN_NAME "train3_lr0.1_q0.85"
 
@@ -21,16 +21,17 @@ int main(){
 	rand_set_seed();
 
 
-	NN nn = InitializeNN(28*28,25,26);
-	TDB tdb = getTrainData("../../Ressources/Lettres/emnist-letters-train-images-idx3-ubyte", "../../Ressources/Lettres/emnist-letters-train-labels-idx1-ubyte"); 
+	//NN nn = InitializeNN(28*28,20,26);
+	NN nn = LoadNN("train_tdb2_20.nn", 456);
+	TDB tdb = getTrainData("../../Ressources/Lettres/image2_tdb", "../../Ressources/Lettres/label2_tdb"); 
 
-	train3_opti(&nn, &tdb, 0.1, 0.85, 100);
+	train3_opti(&nn, &tdb, 0.3, 1, 100);
 	
-	SaveNN(&nn, "train3.nn");
+	SaveNN(&nn, "train_tdb2_20.nn");
 
 
 
-	double error = getErrorNN(&nn, &tdb, 120000);
+	double error = getErrorNN(&nn, &tdb, tdb.nb_images);
 	printf("\n%lf\n", error);
 
 
