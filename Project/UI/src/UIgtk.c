@@ -72,17 +72,11 @@ void signal_trainNN(GtkTextBuffer *buffer)
 	        &d);
 }
 
-//called when Load Image button is clicked
-void load_image(GtkButton *button, GtkImage *image)
-{
-	g_print("load_image()\n");
-}
-
 //called when LaunchOCR button is clicked
 void launchOCR(GtkButton *button,GtkTextBuffer *buffer)
 {
 	g_print("launchOCR()\n");
-	
+	UNUSED(button);
 	//Third parameter is the rotation
 	Text="Error no files given";
 	if(Image_path && NN_path)
@@ -113,17 +107,20 @@ void save_text(GtkButton *button, GtkTextBuffer *buffer)
     		g_file_set_contents (filename, Text, strlen(Text), NULL);
   	}
   	gtk_widget_destroy (dialog);
+  	gtk_text_buffer_set_text(buffer,"File saved",10);
 }
 
 //new file is setted
-void file_set(GtkFileChooser *file)
+void file_set(GtkFileChooser *file,GtkImage *image)
 {
 	Image_path=gtk_file_chooser_get_filename(file);
+	gtk_image_set_from_file (GTK_IMAGE (image), Image_path);
 }
 
 void activate_rotation(GtkEntry *entry)
 {
-	Input_Rotation=gtk_entry_get_text(entry);
+	Input_Rotation=(gchar*)gtk_entry_get_text(entry);
+	g_print("    %s \n",Input_Rotation);
 	Angle=0;
 	indice_sscanf =sscanf((char*)Input_Rotation, "%lf", &Angle);
 }
