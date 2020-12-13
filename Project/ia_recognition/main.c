@@ -22,7 +22,7 @@ int main(){
 
 
 	//NN nn = InitializeNN(28*28,20,26);
-	NN nn = LoadNN("train_tdb2_20.nn", 456);
+	NN nn = LoadNN("train_tdb2_20.nn");
 	TDB tdb = getTrainData("../../Ressources/Lettres/image2_tdb", "../../Ressources/Lettres/label2_tdb"); 
 
 	train3_opti(&nn, &tdb, 0.3, 1, 100);
