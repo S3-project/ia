@@ -110,7 +110,7 @@ int isEqual(char *s1,char *s2)
 	return res;
 }
 
-char * LaunchOCR(char *filepath, char *neuralNetworkFilepath, double rotation)
+char * LaunchOCR(char *filepath, char *neuralNetworkFilepath, double rotation, int denoising)
 {
 	/*
 	 * Launch the detection of characters after having applied the rotation, denoising and made a picture in
@@ -123,7 +123,11 @@ char * LaunchOCR(char *filepath, char *neuralNetworkFilepath, double rotation)
 
 	BMPIMAGE *img = LoadBitmap(filepath);
 	img =  Rotate(rotation, img);
-	img = Denoising(img);
+	if(denoising)
+	{
+		img = Denoising(img);
+	}
+	
 	img = ToGrayBitmap(img);
 	img = ToBlackWhite(img);
 	BMPIMAGE **img_chars = DetectChars(img, &nb_chars, 0);
@@ -439,7 +443,7 @@ int main(int argc, char ** argv)
 		{
 			fclose(file);
 			fclose(networkFile);
-			text = LaunchOCR(argv[2], argv[3], rotation);
+			text = LaunchOCR(argv[2], argv[3], rotation, 1);
 			size_t len = 0;
 			printf("The OCR recognize this text :\n%s\nIt has been save in file %s\n", text, FILENAME);
 
