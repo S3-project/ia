@@ -1,11 +1,5 @@
 #include "bitmap.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-
-
-
 
 /*
 	Create a BMPIMAGE from a bitmap image. 

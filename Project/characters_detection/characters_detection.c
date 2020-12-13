@@ -3,11 +3,6 @@
 //
 
 #include "characters_detection.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "../other/Bitmap/bitmap.h"
-
 
 int IsLineWhite(BMPIMAGE *image, uint32_t y)
 {

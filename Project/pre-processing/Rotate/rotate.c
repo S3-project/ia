@@ -1,9 +1,4 @@
-#include "../../other/Bitmap/bitmap.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <math.h>
-#include <stddef.h>
+#include "rotate.h"
 
 #define M_PI 3.14159265358979323846
 

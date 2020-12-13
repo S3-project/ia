@@ -6,8 +6,6 @@
 
 
 # include "../../main.h"
-# include "../../pre-processing/Rotate/rotate.h"
-# include "../../other/Bitmap/bitmap.h"
 
 
 #define UNUSED(x) (void)(x)

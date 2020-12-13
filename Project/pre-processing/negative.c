@@ -1,5 +1,4 @@
 #include "negative.h"
-#include "../other/Bitmap/bitmap.h"
 
 
 void negative(BMPIMAGE *image, uint32_t x, uint32_t y)

@@ -1,8 +1,12 @@
-#include "../../other/Bitmap/bitmap.h"
-#include <stddef.h>
 #ifndef ROTATE_H
 #define ROTATE_H
 
+#include "../../other/Bitmap/bitmap.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <math.h>
+#include <stddef.h>
 
 BMPIMAGE *Rotate(double degree, BMPIMAGE *image);
 //double **init_matrix(size_t c, size_t r);

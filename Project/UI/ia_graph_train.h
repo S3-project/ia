@@ -1,18 +1,20 @@
+#ifndef IA_GRAPH_TRAIN_H
+#define IA_GRAPH_TRAIN_H
+
+void *Train_graph_NN(void *argv);
+
+
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../ia_recognition/ia.h" 
+#include "../ia_recognition/ia.h"
 
 #define TRAIN_REFRESH_PRINT 1000
 
 
-void TrainIA_NN2(char *dataBaseImagesFilename, char *dataBaseLabelsFilename, char *neuralNetworkFileName, int iteration, double lr, int nb_hiddens, int nb_hiddens2, int *stop, double *progression)
+void TrainIA_graph_NN2(char *dataBaseImagesFilename, char *dataBaseLabelsFilename, char *neuralNetworkFileName, int iteration, double lr, int nb_hiddens, int nb_hiddens2, int *stop, double *progression)
 {
-	/*
-	 * This part train the neural network and print regularly the progression
-	 * At each loop save the neural network in a file in the case of the program ended unexpectedly
-	 */
 	TDB tdb = getTrainData(dataBaseImagesFilename, dataBaseLabelsFilename);
 	size_t size = 28;
 	int nbOutputs = 26;
@@ -47,9 +49,7 @@ void TrainIA_NN2(char *dataBaseImagesFilename, char *dataBaseLabelsFilename, cha
 
 
 
-
-
-void *TrainNN(void *argv)
+void *Train_graph_NN(void *argv)
 {
 	void **arg = argv;
 	char *TDBIm = (char*)arg[0];
@@ -61,12 +61,14 @@ void *TrainNN(void *argv)
 	int *hid2 = (int*)arg[6];
 	int *stop = (int*)arg[7];
 	double *progression = (double*)arg[8];
-	TrainIA_NN2(TDBIm, TDBLab, nn, *iter, *lr, *hid, *hid2, stop, progression);
+	int *running = (int*)arg[9];
+	
+	*running = 1;
+	TrainIA_graph_NN2(TDBIm, TDBLab, nn, *iter, *lr, *hid, *hid2, stop, progression);
+	*running = 0;
 	
 	pthread_exit(EXIT_SUCCESS);
 }
-
-
 
 
 
@@ -75,9 +77,9 @@ void test(void *arg)
 {
 	pthread_t test1;
 	printf("avant\n");
-	pthread_create(&test1, NULL, TrainNN, NULL);
+	//pthread_create(&test1, NULL, TrainNN, NULL);
 	printf("apres\n");
 }
 
 
-
+#endif //FUNCTION_H

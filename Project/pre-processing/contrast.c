@@ -1,5 +1,4 @@
 #include "contrast.h"
-#include "../other/Bitmap/bitmap.h"
 
 
 void contrast(BMPIMAGE *image, uint32_t x, uint32_t y)
