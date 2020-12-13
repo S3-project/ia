@@ -18,6 +18,7 @@ gchar *Input_Rotation;
 char *Text;
 double Angle;
 int indice_sscanf;
+int IA_window_open=0;
 
 int UI()
 {
@@ -43,6 +44,7 @@ int UI()
     
 
     window = GTK_WIDGET(gtk_builder_get_object(builder, "main_window"));
+    
     gtk_builder_connect_signals(builder, NULL);
     
     // get pointers to the labels
@@ -58,16 +60,36 @@ int UI()
 }
 
 // called when Launch Neural Network button is clicked
-void signal_trainNN(GtkTextBuffer *buffer)
+int signal_trainNN(GtkWidget *IA_window)
 {
 	g_print("trainNN()\n");
-	double d=0;
-	gtk_text_buffer_set_text(buffer,"IA trained",10);
-	TrainIA("../Ressources/Lettres/emnist-letters-train-images-idx3-ubyte",
-	        "../Ressources/Lettres/emnist-letters-train-labels-idx1-ubyte",
-	        NULL,
-	        1,
-	        &d);
+	if(!IA_window_open)
+	{
+		GtkBuilder* builder2 = gtk_builder_new ();
+		GError* error2 = NULL;
+		if (gtk_builder_add_from_file(builder2, "UI/glade/main.glade", &error2) == 0)
+		{
+			g_printerr("Error loading file: %s\n", error2->message);
+			g_clear_error(&error2);
+			return 1;
+		}
+		IA_window= GTK_WIDGET(gtk_builder_get_object(builder2, "IA_window"));
+	    	gtk_builder_connect_signals(builder2, NULL);
+	    	g_object_unref(builder2);
+		gtk_widget_show(IA_window);
+		gtk_window_set_title(GTK_WINDOW(IA_window), "Train IA");
+		//gtk_text_buffer_set_text(buffer,"IA training window opened",10);
+		/*
+		double d=0;
+		gtk_text_buffer_set_text(buffer,"IA trained",10);
+		TrainIA("../Ressources/Lettres/emnist-letters-train-images-idx3-ubyte",
+			"../Ressources/Lettres/emnist-letters-train-labels-idx1-ubyte",
+			NULL,
+			1,
+			&d);*/
+		IA_window_open=1;
+	}
+	return 0;
 }
 
 //called when LaunchOCR button is clicked
@@ -139,6 +161,11 @@ void activate_rotation(GtkEntry *entry,GtkImage *image)
 void file_setNN(GtkFileChooser *file)
 {
 	NN_path=gtk_file_chooser_get_filename(file);	
+}
+
+void IA_window_delete()
+{
+	IA_window_open=0;
 }
 
 // called when window is closed
