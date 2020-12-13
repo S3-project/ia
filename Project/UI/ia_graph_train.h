@@ -66,7 +66,6 @@ void TrainIA_graph_NN2(char *dataBaseImagesFilename, char *dataBaseLabelsFilenam
 
 void *Train_graph_NN(void *train_info_p)
 {
-	printf("ok2\n");
 	GRAPH_TRAIN_INFO *train_info=(GRAPH_TRAIN_INFO*) train_info_p;
 	*train_info->RUNNING = 1;
 	TrainIA_graph_NN2(train_info->TDB_IM, train_info->TDB_LB, train_info->NN_PATH, train_info->ITERATION, train_info->LR, train_info->HL1, train_info->HL2, train_info->STOP, train_info->PROGRESSION);

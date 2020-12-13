@@ -113,7 +113,6 @@ void load_bitmap_preview(char* path)
 // called when Launch Neural Network button is clicked
 int on_trainNN_clicked(GtkWidget *IA_window)
 {
-	g_print("trainNN()\n");
 	if(!IA_window_open)
 	{
 		GtkBuilder* builder2 = gtk_builder_new ();
@@ -141,7 +140,6 @@ int on_trainNN_clicked(GtkWidget *IA_window)
 //called when LaunchOCR button is clicked
 void on_launchOCR_button_clicked(GtkButton *button,GtkTextBuffer *buffer)
 {
-	g_print("launchOCR()\n");
 	UNUSED(button);
 	//Third parameter is the rotation
 	Text="Error no files given";
@@ -157,8 +155,7 @@ void on_launchOCR_button_clicked(GtkButton *button,GtkTextBuffer *buffer)
 
 //called when Save Text button is clicked
 void on_savetext_clicked(GtkButton *button, GtkTextBuffer *buffer)
-{	
-	g_print("save_text()\n");
+{
 	GtkWidget *dialog;
   	GtkWidget *toplevel = gtk_widget_get_toplevel (GTK_WIDGET(button));
   	dialog = gtk_file_chooser_dialog_new ("Save Text ",
@@ -190,7 +187,6 @@ void on_fileimage_selected(GtkFileChooser *file)
 void on_rotation_activated(GtkEntry *entry)
 {
 	Input_Rotation=(gchar*)gtk_entry_get_text(entry);
-	g_print("    %s \n",(char*)Input_Rotation);
 	Angle=0;
 	indice_sscanf =sscanf((char*)Input_Rotation, "%lf", &Angle);
 	
@@ -269,7 +265,6 @@ void on_denoise_checked()
 		denoise=1;
 	else
 		denoise=0;
-	g_print("%d \n",denoise);
 	
 	if(denoise)
 	{
@@ -327,25 +322,21 @@ GRAPH_TRAIN_INFO train_info={NULL,NULL,NULL,0,0.1,15,15,&stop,&progression,&runn
 void on_databaseim_selected(GtkFileChooser *file)
 {
 	database_images=gtk_file_chooser_get_filename(file);
-	g_print("    %s \n",(char*)database_images);
 }
 
 void on_databaselb_selected(GtkFileChooser *file)
 {
 	labels_images=gtk_file_chooser_get_filename(file);
-	g_print("    %s \n",(char*)labels_images);
 }
 
 void on_NNtrain_selected(GtkFileChooser *file)
 {
 	IA_optional=gtk_file_chooser_get_filename(file);
-	g_print("    %s \n",(char*)IA_optional);
 }
 
 void on_newfile_activated(GtkEntry *entry)
 {
 	New_File=(gchar*)gtk_entry_get_text(entry);
-	g_print("    %s \n",(char*)New_File);
 	if(!New_File[0])
 		New_File=NULL;	
 }
@@ -440,7 +431,6 @@ void on_start_training_clicked(GtkButton *button,GtkTextBuffer *buffer)
 
 void on_stop_training_clicked()
 {
-	g_print("%d \n",running);
 	stop=1;
 	progression=0;
 	if(timeout_tag!=0)
@@ -454,7 +444,6 @@ void on_stop_training_clicked()
 void on_nbhiddenlayer1_activated(GtkEntry *entry)
 {
 	Input_hiddenlayer1=(gchar*)gtk_entry_get_text(entry);
-	g_print("    %s \n",(char*)Input_hiddenlayer1);
 	sscanf((char*)Input_hiddenlayer1, "%d", &hidden_layers1);
 }
 
@@ -462,7 +451,6 @@ void on_nbhiddenlayer1_activated(GtkEntry *entry)
 void on_nbhiddenlayer2_activated(GtkEntry *entry)
 {
 	Input_hiddenlayer2=(gchar*)gtk_entry_get_text(entry);
-	g_print("    %s \n",(char*)Input_hiddenlayer2);
 	sscanf((char*)Input_hiddenlayer2, "%d", &hidden_layers2);
 }
 
@@ -470,7 +458,6 @@ void on_nbhiddenlayer2_activated(GtkEntry *entry)
 void on_lr_activated(GtkEntry *entry)
 {
 	Input_learningrate=(gchar*)gtk_entry_get_text(entry);
-	g_print("    %s \n",(char*)Input_learningrate);
 	sscanf((char*)Input_learningrate, "%lf", &learning_rate);
 }
 
@@ -478,10 +465,7 @@ void on_lr_activated(GtkEntry *entry)
 void on_iterations_activated(GtkEntry *entry)
 {
 	Input_iteration=(gchar*)gtk_entry_get_text(entry);
-	g_print("    %s \n",(char*)Input_iteration);
 	sscanf((char*)Input_iteration, "%d", &iteration);
 }
-
-
 
 #endif
