@@ -19,6 +19,8 @@ char *Text;
 double Angle;
 int indice_sscanf;
 int IA_window_open=0;
+int denoise=0;
+
 
 int UI()
 {
@@ -100,7 +102,7 @@ void launchOCR(GtkButton *button,GtkTextBuffer *buffer)
 	//Third parameter is the rotation
 	Text="Error no files given";
 	if(Image_path && NN_path)
-		Text=LaunchOCR((char*)Image_path,(char*)NN_path,Angle);
+		Text=LaunchOCR((char*)Image_path,(char*)NN_path,Angle,denoise);
 	int len=0;
 	while(Text[len]!='\0')
 		len++;
@@ -163,9 +165,19 @@ void file_setNN(GtkFileChooser *file)
 	NN_path=gtk_file_chooser_get_filename(file);	
 }
 
+
 void IA_window_delete()
 {
 	IA_window_open=0;
+}
+
+void denoise_check()
+{
+	if(!denoise)
+		denoise=1;
+	else
+		denoise=0;
+	g_print("%d \n",denoise);
 }
 
 // called when window is closed
@@ -174,3 +186,95 @@ void gtk_quit()
     gtk_main_quit();
 }
 
+
+
+///////////////////
+///Second Window///
+///////////////////
+
+gchar *database_images=NULL;
+gchar *labels_images=NULL;
+gchar *IA_optional=NULL;
+
+gchar *Input_hiddenlayer;
+gchar *Input_learningrate;
+gchar *Input_iteration;
+
+int hidden_layers=0;
+double learning_rate=0;
+int iteration=0;
+
+int stop=0;
+double progression=0;
+int running =0;
+
+/////The three file chooser button and their signals
+void database_im(GtkFileChooser *file)
+{
+	database_images=gtk_file_chooser_get_filename(file);
+	g_print("    %s \n",(char*)database_images);
+}
+
+void labels_im(GtkFileChooser *file)
+{
+	labels_images=gtk_file_chooser_get_filename(file);
+	g_print("    %s \n",(char*)labels_images);
+}
+
+void existingNN(GtkFileChooser *file)
+{
+	IA_optional=gtk_file_chooser_get_filename(file);
+	g_print("    %s \n",(char*)IA_optional);
+}
+
+
+/////Start and stop button
+void start_training()
+{
+	//if(!running)
+	/*int a=10;
+	progression=0;
+	stop=0;
+	void** arg[9];
+	arg[0]=(char*)database_images;
+	arg[1]=(char*)labels_images;
+	arg[2]=(char*)IA_optional;
+	arg[3]=&iteration;
+	arg[4]=&learning_rate;
+	arg[5]=&hidden_layers;
+	arg[6]=&a;
+	arg[7]=&stop;
+	arg[8]=&progression;
+	arg[9]=&running;*/
+}
+
+void stop_training()
+{
+	stop=1;
+}
+
+
+/////Parameters of hidden layers, learning rate, iteration
+void activate_hiddenlayer(GtkEntry *entry)
+{
+	Input_hiddenlayer=(gchar*)gtk_entry_get_text(entry);
+	g_print("    %s \n",(char*)Input_hiddenlayer);
+	Angle=0;
+	sscanf((char*)Input_hiddenlayer, "%d", &hidden_layers);
+}
+
+
+void activate_learningrate(GtkEntry *entry)
+{
+	Input_learningrate=(gchar*)gtk_entry_get_text(entry);
+	g_print("    %s \n",(char*)Input_learningrate);
+	sscanf((char*)Input_learningrate, "%lf", &learning_rate);
+}
+
+
+void activate_iteration(GtkEntry *entry)
+{
+	Input_iteration=(gchar*)gtk_entry_get_text(entry);
+	g_print("    %s \n",(char*)Input_iteration);
+	sscanf((char*)Input_iteration, "%d", &iteration);
+}
