@@ -11,7 +11,7 @@
 #include "pre-processing/contrast.h"
 #include "pre-processing/negative.h"
 #include "UI/src/UIgtk.h"
-#include "UI/ia_graph_train.h"
+
 
 #define FILENAME "chars_detected.txt"
 #define WRONGCOMMAND "Command Error, there is the commands you can do:\n\

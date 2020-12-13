@@ -1,7 +1,7 @@
 #ifndef IA_GRAPH_TRAIN_H
 #define IA_GRAPH_TRAIN_H
 
-void *Train_graph_NN(void *argv);
+
 
 
 #include <pthread.h>
@@ -12,6 +12,20 @@ void *Train_graph_NN(void *argv);
 
 #define TRAIN_REFRESH_PRINT 1000
 
+typedef struct {
+	char *TDB_IM;
+	char *TDB_LB;
+	char *NN_PATH;
+	int ITERATION;
+	double LR;
+	int HL1;
+	int HL2;
+	int *STOP;
+	double *PROGRESSION;
+	int *RUNNING;
+} GRAPH_TRAIN_INFO;
+
+void *Train_graph_NN(void *train_info);
 
 void TrainIA_graph_NN2(char *dataBaseImagesFilename, char *dataBaseLabelsFilename, char *neuralNetworkFileName, int iteration, double lr, int nb_hiddens, int nb_hiddens2, int *stop, double *progression)
 {
@@ -32,7 +46,7 @@ void TrainIA_graph_NN2(char *dataBaseImagesFilename, char *dataBaseLabelsFilenam
 	nn.lr = lr;
 	for (int a = 0; a < iteration && !*stop; a++){
 		int i = 0;
-		while (i < tdb.nb_images)
+		while (i < tdb.nb_images && !*stop)
 		{
 			trainNN2(&nn, tdb.images[i], tdb.labels[i]);
 			if(i%1000 == 0){
@@ -41,6 +55,7 @@ void TrainIA_graph_NN2(char *dataBaseImagesFilename, char *dataBaseLabelsFilenam
 
 			i++;
 		}
+		
 		SaveNN2(&nn, neuralNetworkFileName);
 	}
 	FreeTDB(&tdb);
@@ -49,37 +64,19 @@ void TrainIA_graph_NN2(char *dataBaseImagesFilename, char *dataBaseLabelsFilenam
 
 
 
-void *Train_graph_NN(void *argv)
+void *Train_graph_NN(void *train_info_p)
 {
-	void **arg = argv;
-	char *TDBIm = (char*)arg[0];
-	char *TDBLab = (char*)arg[1];
-	char *nn = (char*)arg[2];
-	int *iter = (int*)arg[3];
-	double *lr = (double*)arg[4];
-	int *hid = (int*)arg[5];
-	int *hid2 = (int*)arg[6];
-	int *stop = (int*)arg[7];
-	double *progression = (double*)arg[8];
-	int *running = (int*)arg[9];
-	
-	*running = 1;
-	TrainIA_graph_NN2(TDBIm, TDBLab, nn, *iter, *lr, *hid, *hid2, stop, progression);
-	*running = 0;
+	printf("ok2\n");
+	GRAPH_TRAIN_INFO *train_info=(GRAPH_TRAIN_INFO*) train_info_p;
+	*train_info->RUNNING = 1;
+	TrainIA_graph_NN2(train_info->TDB_IM, train_info->TDB_LB, train_info->NN_PATH, train_info->ITERATION, train_info->LR, train_info->HL1, train_info->HL2, train_info->STOP, train_info->PROGRESSION);
+	*train_info->RUNNING  = 0;
 	
 	pthread_exit(EXIT_SUCCESS);
 }
 
 
 
-
-void test(void *arg)
-{
-	pthread_t test1;
-	printf("avant\n");
-	//pthread_create(&test1, NULL, TrainNN, NULL);
-	printf("apres\n");
-}
 
 
 #endif //FUNCTION_H

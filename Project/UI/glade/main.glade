@@ -52,7 +52,7 @@ after a launch prints out the result.</property>
                         <property name="can_focus">False</property>
                         <property name="filter">filefilter1</property>
                         <property name="title" translatable="yes"/>
-                        <signal name="file-set" handler="file_set" object="image" swapped="no"/>
+                        <signal name="file-set" handler="on_fileimage_selected" object="image" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -105,7 +105,7 @@ after a launch prints out the result.</property>
                         <property name="can_focus">False</property>
                         <property name="filter">filefilter2</property>
                         <property name="title" translatable="yes"/>
-                        <signal name="file-set" handler="file_setNN" swapped="no"/>
+                        <signal name="file-set" handler="on_fileNN_selected" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -125,7 +125,7 @@ after a launch prints out the result.</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="signal_trainNN" object="IA_window" swapped="no"/>
+                    <signal name="clicked" handler="on_trainNN_clicked" object="IA_window" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -155,7 +155,7 @@ after a launch prints out the result.</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="launchOCR" object="textbuffer1" swapped="no"/>
+                    <signal name="clicked" handler="on_launchOCR_button_clicked" object="textbuffer1" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -188,7 +188,7 @@ after a launch prints out the result.</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="denoise_check" swapped="no"/>
+                        <signal name="toggled" handler="on_denoise_checked" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -226,7 +226,7 @@ Rotate :
                       <object class="GtkEntry" id="rotate">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <signal name="activate" handler="activate_rotation" object="image" swapped="no"/>
+                        <signal name="activate" handler="on_rotation_activated" object="image" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -306,7 +306,7 @@ Rotate :
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <signal name="clicked" handler="save_text" object="textbuffer1" swapped="no"/>
+                <signal name="clicked" handler="on_savetext_clicked" object="textbuffer1" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -325,7 +325,7 @@ Rotate :
     </child>
   </object>
   <object class="GtkTextBuffer" id="textbuffer2">
-    <property name="text" translatable="yes">prout</property>
+    <property name="text" translatable="yes">Informations come here</property>
   </object>
   <object class="GtkWindow" id="IA_window">
     <property name="name">IA_window</property>
@@ -358,7 +358,7 @@ Rotate :
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="title" translatable="yes"/>
-                    <signal name="file-set" handler="database_im" swapped="no"/>
+                    <signal name="file-set" handler="on_databaseim_selected" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -395,7 +395,7 @@ Rotate :
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="title" translatable="yes"/>
-                    <signal name="file-set" handler="labels_im" swapped="no"/>
+                    <signal name="file-set" handler="on_databaselb_selected" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -433,7 +433,7 @@ Rotate :
                     <property name="can_focus">False</property>
                     <property name="filter">filefilter2</property>
                     <property name="title" translatable="yes"/>
-                    <signal name="file-set" handler="existingNN" swapped="no"/>
+                    <signal name="file-set" handler="on_NNtrain_selected" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -460,6 +460,45 @@ Rotate :
                 <property name="position">2</property>
               </packing>
             </child>
+            <child>
+              <object class="GtkBox" id="Box_1_4">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="homogeneous">True</property>
+                <child>
+                  <object class="GtkEntry">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <signal name="activate" handler="on_newfile_activated" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes"> Name of the new file in 
+case no AI has been given
+(.nn needed)</property>
+                    <property name="justify">center</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="left_attach">0</property>
@@ -478,7 +517,7 @@ Rotate :
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <signal name="activate" handler="start_training" swapped="no"/>
+                <signal name="clicked" handler="on_start_training_clicked" object="textbuffer2" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -492,7 +531,7 @@ Rotate :
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <signal name="activate" handler="stop_training" swapped="no"/>
+                <signal name="clicked" handler="on_stop_training_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -512,8 +551,44 @@ Rotate :
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <property name="homogeneous">True</property>
+            <property name="baseline_position">top</property>
             <child>
-              <placeholder/>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="homogeneous">True</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Number of neurons
+ in Hidden Layer 1 : </property>
+                    <property name="justify">center</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <signal name="activate" handler="on_nbhiddenlayer1_activated" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
             </child>
             <child>
               <object class="GtkBox" id="Box_3_1">
@@ -524,7 +599,9 @@ Rotate :
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Number of Hidden Layer : </property>
+                    <property name="label" translatable="yes">Number of neurons 
+in Hidden Layer 2 : </property>
+                    <property name="justify">center</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -536,7 +613,7 @@ Rotate :
                   <object class="GtkEntry" id="Hidden Layers">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <signal name="activate" handler="activate_hiddenlayer" swapped="no"/>
+                    <signal name="activate" handler="on_nbhiddenlayer2_activated" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -561,6 +638,7 @@ Rotate :
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Learning Rate : </property>
+                    <property name="justify">center</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -572,7 +650,7 @@ Rotate :
                   <object class="GtkEntry" id="Learning Rate">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <signal name="activate" handler="activate_learningrate" swapped="no"/>
+                    <signal name="activate" handler="on_lr_activated" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -597,6 +675,7 @@ Rotate :
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Iteration : </property>
+                    <property name="justify">center</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -608,7 +687,7 @@ Rotate :
                   <object class="GtkEntry" id="Iteration">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <signal name="activate" handler="activate_iteration" swapped="no"/>
+                    <signal name="activate" handler="on_iterations_activated" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -634,19 +713,6 @@ Rotate :
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="homogeneous">True</property>
-            <child>
-              <object class="GtkSpinner">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="active">True</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="padding">30</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
             <child>
               <object class="GtkTextView">
                 <property name="visible">True</property>
