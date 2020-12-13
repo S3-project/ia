@@ -11,6 +11,7 @@
 #include "pre-processing/Rotate/rotate.h"
 #include "pre-processing/contrast.h"
 #include "pre-processing/negative.h"
+#include "UI/src/UIgtk.h"
 
 #define FILENAME "chars_detected.txt"
 #define WRONGCOMMAND "Command Error, there is the commands you can do:\n\
@@ -423,7 +424,7 @@ int main(int argc, char ** argv)
 	rand_set_seed();
 	if(argc == 2 && isEqual(argv[1], "-graph"))
 	{
-		printf("need to implement the graphic part\n");
+		UI();
 	}
 	else if (argc == 5 && isEqual(argv[1], "-ocr"))
 	{
