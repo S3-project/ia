@@ -52,7 +52,7 @@ after a launch prints out the result.</property>
                         <property name="can_focus">False</property>
                         <property name="filter">filefilter1</property>
                         <property name="title" translatable="yes"/>
-                        <signal name="file-set" handler="on_fileimage_selected" object="image" swapped="no"/>
+                        <signal name="file-set" handler="on_fileimage_selected" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -226,7 +226,7 @@ Rotate :
                       <object class="GtkEntry" id="rotate">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <signal name="activate" handler="on_rotation_activated" object="image" swapped="no"/>
+                        <signal name="activate" handler="on_rotation_activated" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -261,11 +261,10 @@ Rotate :
             <property name="can_focus">False</property>
             <property name="homogeneous">True</property>
             <child>
-              <object class="GtkImage" id="image">
+              <object class="GtkDrawingArea" id="area">
+                <property name="name">area</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="margin_right">58</property>
-                <property name="stock">gtk-bold</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -277,9 +276,9 @@ Rotate :
               <object class="GtkTextView" id="text_viewer">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="margin_bottom">160</property>
-                <property name="wrap_mode">char</property>
-                <property name="justification">fill</property>
+                <property name="margin_bottom">162</property>
+                <property name="pixels_above_lines">5</property>
+                <property name="justification">center</property>
                 <property name="buffer">textbuffer1</property>
               </object>
               <packing>
@@ -717,12 +716,12 @@ in Hidden Layer 2 : </property>
               <object class="GtkTextView">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="pixels_above_lines">91</property>
+                <property name="pixels_above_lines">6</property>
                 <property name="justification">center</property>
                 <property name="buffer">textbuffer2</property>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>

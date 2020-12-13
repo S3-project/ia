@@ -20,6 +20,15 @@
 
 int UI();
 
+gboolean on_draw_image(GtkWidget *widget, cairo_t *cr, gpointer user_data);
+
+typedef struct {
+	BMPIMAGE *img;
+	BMPIMAGE *img_original;
+} AREA_IMG;
+AREA_IMG area_img = {NULL,NULL};
+
+GtkDrawingArea* area = NULL;
 
 gchar *Image_path=NULL;
 gchar *NN_path=NULL;
@@ -39,6 +48,8 @@ int UI()
 
     // Initializes GTK.
     gtk_init(NULL, NULL);
+    
+    
 
     // Constructs a GtkBuilder instance.
     GtkBuilder* builder = gtk_builder_new ();
@@ -56,9 +67,11 @@ int UI()
     
 	
     window = GTK_WIDGET(gtk_builder_get_object(builder, "main_window"));
+    area = GTK_DRAWING_AREA(gtk_builder_get_object(builder, "area"));
+    
     
     gtk_builder_connect_signals(builder, NULL);
-    
+    g_signal_connect(area, "draw", G_CALLBACK(on_draw_image), &area_img);
     
 
     g_object_unref(builder);
@@ -68,6 +81,33 @@ int UI()
     gtk_main();
 
     return 0;
+}
+
+
+void free_bitmap_preview()
+{
+	if(area_img.img)
+	{
+		FreeBitmap(area_img.img);
+	}
+}
+
+void free_bitmap_preview_all()
+{
+	if(area_img.img)
+	{
+		FreeBitmap(area_img.img);
+	}
+	if(area_img.img_original)
+	{
+		FreeBitmap(area_img.img_original);
+	}
+}
+
+void load_bitmap_preview(char* path)
+{
+	area_img.img_original=LoadBitmap(path);
+	area_img.img=LoadBitmap(path);
 }
 
 // called when Launch Neural Network button is clicked
@@ -139,31 +179,78 @@ void on_savetext_clicked(GtkButton *button, GtkTextBuffer *buffer)
 }
 
 //new file is setted
-void on_fileimage_selected(GtkFileChooser *file,GtkImage *image)
+void on_fileimage_selected(GtkFileChooser *file)
 {
 	Image_path=gtk_file_chooser_get_filename(file);
-	gtk_image_set_from_file (GTK_IMAGE (image), Image_path);
+	free_bitmap_preview();
+	load_bitmap_preview((char*)Image_path);
+	gtk_widget_queue_draw(GTK_WIDGET(area));
 }
 
-void on_rotation_activated(GtkEntry *entry,GtkImage *image)
+void on_rotation_activated(GtkEntry *entry)
 {
 	Input_Rotation=(gchar*)gtk_entry_get_text(entry);
 	g_print("    %s \n",(char*)Input_Rotation);
 	Angle=0;
 	indice_sscanf =sscanf((char*)Input_Rotation, "%lf", &Angle);
-	UNUSED(image);
-	/*if(indice_sscanf)
-	{
-		BMPIMAGE *bmp_image = LoadBitmap((char*)Image_path);
-		
-		BMPIMAGE *rotateimage = Rotate(Angle,bmp_image);
-		
-		SaveBitmap(rotateimage, (char*)Image_path);
-		FreeBitmap(rotateimage);
-		FreeBitmap(bmp_image);
-		gtk_image_set_from_file (GTK_IMAGE (image), Image_path);
-	}*/
+	
+	BMPIMAGE *img_rot=Rotate(Angle,area_img.img_original);
+	free_bitmap_preview();
+	area_img.img=img_rot;
+	gtk_widget_queue_draw(GTK_WIDGET(area));
 }
+
+
+gboolean on_draw_image(GtkWidget *widget, cairo_t *cr, gpointer user_data)
+{
+	// Sets the background to white.
+	cairo_set_source_rgb(cr, 1, 1, 1);
+	cairo_paint(cr);
+
+	// Gets the image.
+	AREA_IMG *aimg = user_data;
+	BMPIMAGE *img = aimg->img;
+	if (img == NULL){
+		return FALSE;
+	}
+	
+	int width_area = gtk_widget_get_allocated_width(widget);
+	int height_area = gtk_widget_get_allocated_height(widget);
+	int width = img->header.width;
+	int height = img->header.heigth;
+
+
+	double ratio = width_area / (double)width;
+	
+	if (height * ratio > height_area){
+		ratio = height_area / (double)height;
+	}
+	int size_x = (int)(width * ratio);
+	int size_y = (int)(height * ratio);
+	int x_start = (width_area - size_x) / 2;
+	int y_start = (height_area - size_y) / 2;
+	double step_y = height / (double)size_y;
+	double value_y = 0;
+	for (int y = 0; y < size_y; y++){
+		double step_x = width / (double)size_x;
+		double value_x = 0;
+		for (int x = 0; x < size_x; x++){
+			
+			RGB rgb = img->data[(int)value_y][(int)value_x];
+			
+			cairo_set_source_rgb(cr, rgb.R / 255.0, rgb.G / 255.0, rgb.B / 255.0);
+			cairo_rectangle(cr, x+x_start, y+y_start, 1, 1);
+			cairo_fill(cr);
+			value_x += step_x;
+		}
+		value_y += step_y;
+	}
+
+	// Propagates the signal.
+	return FALSE;
+	
+}
+
 
 //new neural network file is setted
 void on_fileNN_selected(GtkFileChooser *file)
@@ -183,11 +270,30 @@ void on_denoise_checked()
 	else
 		denoise=0;
 	g_print("%d \n",denoise);
+	
+	if(denoise)
+	{
+		BMPIMAGE *img_rot=Rotate(Angle,area_img.img_original);
+		BMPIMAGE *img_den=Denoising(img_rot);
+		FreeBitmap(img_rot);
+		free_bitmap_preview();
+		area_img.img=img_den;
+		gtk_widget_queue_draw(GTK_WIDGET(area));
+	}
+	else
+	{
+		
+		BMPIMAGE *img_rot=Rotate(Angle,area_img.img_original);
+		free_bitmap_preview();
+		area_img.img=img_rot;
+		gtk_widget_queue_draw(GTK_WIDGET(area));
+	}
 }
 
 // called when window is closed
 void gtk_quit()
 {
+    free_bitmap_preview_all();
     gtk_main_quit();
 }
 
@@ -239,7 +345,9 @@ void on_NNtrain_selected(GtkFileChooser *file)
 void on_newfile_activated(GtkEntry *entry)
 {
 	New_File=(gchar*)gtk_entry_get_text(entry);
-	g_print("    %s \n",(char*)New_File);	
+	g_print("    %s \n",(char*)New_File);
+	if(!New_File[0])
+		New_File=NULL;	
 }
 
 
@@ -249,15 +357,38 @@ gboolean display_progression(gpointer buff)
 	GtkTextBuffer *buffer=buff;
 	if(running)
 	{
-		char *progression_text="123456";
-		sprintf(progression_text, "%.2lf %c",progression,'%');
-		gtk_text_buffer_set_text(buffer,progression_text,6);
+		if(progression==0)
+		{
+			gtk_text_buffer_set_text(buffer,"Loading database...",19);
+		}
+		else if(progression<10)
+		{
+			char progression_text[7];
+			sprintf(progression_text, "%.2lf %c",progression,'%');
+			progression_text[6]=0;
+			gtk_text_buffer_set_text(buffer,progression_text,6);
+		}
+		else
+		{	
+			char progression_text[8];
+			sprintf(progression_text, "%.2lf %c",progression,'%');
+			progression_text[7]=0;
+			gtk_text_buffer_set_text(buffer,progression_text,7);
+		}
+	}
+	if(!running)
+	{
+		gtk_text_buffer_set_text(buffer,"The training is finished !",26);
+		timeout_tag=0;
+		progression=0;
+		return FALSE;
 	}
 	return TRUE;
 }
 
-void on_start_training_clicked(GtkTextBuffer *buffer)
+void on_start_training_clicked(GtkButton *button,GtkTextBuffer *buffer)
 {
+	UNUSED(button);
 	if(New_File)
 	{
 		train_info.NN_PATH=(char*)New_File;
@@ -269,34 +400,41 @@ void on_start_training_clicked(GtkTextBuffer *buffer)
 	
 	if(train_info.NN_PATH)
 	{
-		if(!running)
-		{	
-			//timeout_tag = g_timeout_add(100,display_progression,buffer);
-			
-			pthread_t thread;
-			
-			train_info.PROGRESSION=0;
-			train_info.STOP=0;
-			
-			train_info.TDB_IM=(char*)database_images;
-			train_info.TDB_LB=(char*)labels_images;
-			train_info.ITERATION=iteration;
-			train_info.LR=learning_rate;
-			train_info.HL1=hidden_layers1;
-			train_info.HL2=hidden_layers2;
-			train_info.STOP=&stop;
-			train_info.PROGRESSION=&progression;
-			train_info.RUNNING=&running;
-			pthread_create(&thread,NULL,Train_graph_NN,&train_info);
+		if(database_images && labels_images)
+		{
+			if(!running)
+			{	
+				timeout_tag = g_timeout_add(25,display_progression,buffer);
+				stop=0;
+				pthread_t thread;
+				
+				train_info.PROGRESSION=0;
+				train_info.STOP=0;
+				
+				train_info.TDB_IM=(char*)database_images;
+				train_info.TDB_LB=(char*)labels_images;
+				train_info.ITERATION=iteration;
+				train_info.LR=learning_rate;
+				train_info.HL1=hidden_layers1;
+				train_info.HL2=hidden_layers2;
+				train_info.STOP=&stop;
+				train_info.PROGRESSION=&progression;
+				train_info.RUNNING=&running;
+				pthread_create(&thread,NULL,Train_graph_NN,&train_info);
+			}
+			else
+			{
+				gtk_text_buffer_set_text(buffer,"Training is already running.",28);
+			}
 		}
 		else
 		{
-			//gtk_text_buffer_set_text(buffer,"Training is already running.",28);
+			gtk_text_buffer_set_text(buffer,"Database not given.",19);
 		}
 	}
 	else
 	{
-		//gtk_text_buffer_set_text(buffer,"Error with the neural network name. Please choose a file or enter a name.",73);
+		gtk_text_buffer_set_text(buffer,"Error with the neural network name. Please choose a file or enter a name.",73);
 	}
 }
 
@@ -304,8 +442,12 @@ void on_stop_training_clicked()
 {
 	g_print("%d \n",running);
 	stop=1;
-	//g_source_remove(timeout_tag);
-	
+	progression=0;
+	if(timeout_tag!=0)
+	{
+		g_source_remove(timeout_tag);
+		timeout_tag=0;
+	}
 }
 
 /////Parameters of hidden layers, learning rate, iteration
