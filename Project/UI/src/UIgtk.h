@@ -21,6 +21,7 @@
 int UI();
 
 gboolean on_draw_image(GtkWidget *widget, cairo_t *cr, gpointer user_data);
+void on_stop_training_clicked();
 
 typedef struct {
 	BMPIMAGE *img;
@@ -256,6 +257,7 @@ void on_fileNN_selected(GtkFileChooser *file)
 
 void IA_window_delete()
 {
+	on_stop_training_clicked();
 	IA_window_open=0;
 }
 
