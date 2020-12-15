@@ -460,6 +460,15 @@ void on_nbhiddenlayer2_activated(GtkEntry *entry)
 void on_lr_activated(GtkEntry *entry)
 {
 	Input_learningrate=(gchar*)gtk_entry_get_text(entry);
+	int i = 0;
+	while ((char)Input_learningrate[i] != '\0')
+	{
+		if((char)Input_learningrate[i] == '.')
+			Input_learningrate[i] = (gchar)',';
+		
+		i++;
+	}
+	
 	sscanf((char*)Input_learningrate, "%lf", &learning_rate);
 }
 
