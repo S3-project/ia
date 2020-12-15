@@ -27,16 +27,21 @@ REMEMBER TO PRESS THE ENTER KEY TO VALIDATE EACH VALUE THAT YOU ENTER USING THE 
 
 
 	For character recognition you need two elements, your image and a neural network.
-	Via the command line it is necessary to use the argument "-ocr" followed by the image path,
+
+-Via the command line it is necessary to use the argument "-ocr" followed by the image path,
 the neural network path to be used and the angle of rotation of the image desired.
-	For the graphic part, you just have to fill in the same elements, you also have the choice of
+
+-For the graphic part, you just have to fill in the same elements, you also have the choice of
 disable denoising.
 
 
-	For the training part of a neural network, on the command line, you have the choice between two
-type of network, one with a single layer of hidden neurons and the other with two. Each has an argument according to
-who you want to train a new network or improve an existing network.
-	For the graphics part, you can only create or improve networks of two layers. You have the
+	For the training part of a neural network,
+ 
+-On the command line, you have the choice between two type of network, one with a single layer of hidden neurons and the other with two. 
+Each has an argument according to who you want to train a new network or improve an existing network.
+	
+-For the graphics part, you can only create or improve networks of two layers. You have the
 possibility to stop training with the stop button. The program then saves the network as it is.
+	
 	Regardless of the training method, an iteration corresponds to the complete path of the database.
-At the end of each iteration, the network is saved to avoid losing all progress if it comes a problem.
+At the end of each iteration, the network is saved to avoid losing all progress if a problem occurs.
