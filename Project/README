@@ -3,35 +3,40 @@
 * pierre.litoux (LITOUX Pierre)
 * thimot.veyre (VEYRE Thimot)
 
+//////////////////////////////////////
 
-Vous trouverez ci-dessous le fonctionnenment de notre programme.
+REMEMBER TO PRESS THE ENTER KEY TO VALIDATE EACH VALUE THAT YOU ENTER USING THE KEYPAD.
 
-Notre programme accepte trois types de fichiers:
-- le réseau de neurones en .nn
-- les images, uniquements de fichiers .bmp enregistré en fortats de couleur 24 bits.
-- les bases de donées qui sont un fichier spécifique et sans nom. (Nous conseillons d'utiliser ceux fournis
-avec le programme)
+//////////////////////////////////////
 
 
-Le programme est divisé en deux partie, la première sur la reconnaissance de caractères et
-et la deuxième sur l'entrainement d'un réseau de neurones.
+You will find below how our program works.
 
-Pour lancer l'interface graphique ajouter simplement l'argument "-graph" lors de l'appel du programme.
-PENSEZ A APPUYER SUR LA TOUCHE ENTREE POUR VALIDER CHAQUE VALEUR QUE RENTRER A L'AIDE DU CLAVIER.
-
-
-	Pour la reconnaissance de caractères, il faut deux éléments, votre image et un réseau de neurones.
-Via la ligne de commande il faut utiliser l'arguement "-ocr" suivit du chemin de l'image,
-du chemin du reseau de neurones à utiliser et de l'angle de rotation de l'image voulu.
-	Pour la partie, graphique, il vous suffit de remplir les mêmes élements, vous avez en plus le choix de 
-	désactiver le denoising.
+Our program accepts three types of files:
+- neural networks in .nn
+- images, only .bmp files saved in 24-bit color formats.
+- the databases which are a specific and unnamed file. (We recommend using those provided
+with the program)
 
 
-	Pour la partie entrainement d'un réseau de neurone, en ligne de commande, vous avez le choix entre deux 
-type de réseau, un avec une seule couche de neurones cachés et l'autre avec deux. Chacun possède une commande selon 
-qui vous souhaitiez entrainer un nouveau réseau ou améliorer un réseau déjà existant.
-	Pour la partie graphique, vous ne pouvez que créer ou améliorer des réseaux de deux couches. Vous avez la 
-possibilité de stoper l'entrainement avec le boutton stop. Le programme enregistre alors le réseau tel qu'il est.
-	Peux importe la méthode d'entrainement, une itératiration correspond au parcours complet de la base de donées.
-A la fin de chaque itération, le réseau est enregistré pour éviter de perdre toutes la progression s'il vient à y 
-avoir un problème.
+The program is divided into two parts, the first on character recognition
+and the second on training a neural network.
+
+To start the graphical interface simply add the argument "-graph" when calling the program.
+REMEMBER TO PRESS THE ENTER KEY TO VALIDATE EACH VALUE THAT YOU ENTER USING THE KEYPAD.
+
+
+	For character recognition you need two elements, your image and a neural network.
+	Via the command line it is necessary to use the argument "-ocr" followed by the image path,
+the neural network path to be used and the angle of rotation of the image desired.
+	For the graphic part, you just have to fill in the same elements, you also have the choice of
+disable denoising.
+
+
+	For the training part of a neural network, on the command line, you have the choice between two
+type of network, one with a single layer of hidden neurons and the other with two. Each has an argument according to
+who you want to train a new network or improve an existing network.
+	For the graphics part, you can only create or improve networks of two layers. You have the
+possibility to stop training with the stop button. The program then saves the network as it is.
+	Regardless of the training method, an iteration corresponds to the complete path of the database.
+At the end of each iteration, the network is saved to avoid losing all progress if it comes a problem.
